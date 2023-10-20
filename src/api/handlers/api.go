@@ -2,9 +2,21 @@ package handlers
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 )
+
+// func AllRoutesTextHandler(c *gin.Context) {
+
+// 	routes := c.Routes()
+// 	response := ""
+// 	for _, route := range routes {
+// 		response += fmt.Sprintf("%s %s\n", route.Method, route.Path)
+// 	}
+// 	c.String(200, response)
+
+// }
 
 func HomeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
@@ -58,4 +70,52 @@ func SecretHandler(c *gin.Context) {
 	})
 
 	c.Request.Response.Header.Add("Content-Type", "application/json")
+}
+
+func MountSamplesHandlers(r *gin.Engine) {
+
+	group := r.Group("/samples")
+
+	group.GET("/", HomeHandler)
+	group.GET("/xml", XmlHandler)
+	group.GET("/text", TextHandler)
+	group.GET("/yaml", YamlHandler)
+	group.GET("/protobuf", ProtobufHandler)
+	group.GET("/server-side-events", ServerSideEventsHandler)
+	group.GET("/secret", SecretHandler)
+	// group.GET("/routes", AllRoutesTextHandler)
+
+	group.GET("/routes", func(ctx *gin.Context) {
+
+		type Route struct {
+			Method  string
+			Path    string
+			Handler string
+		}
+
+		if gin.Mode() == gin.DebugMode {
+
+			routes := make([]Route, 0)
+			var response string
+
+			for _, route := range r.Routes() {
+				routes = append(routes, Route{
+					Method:  route.Method,
+					Path:    route.Path,
+					Handler: route.Handler,
+				})
+			}
+
+			sort.Slice(routes, func(i, j int) bool {
+				return routes[i].Path < routes[j].Path
+			})
+
+			for _, route := range routes {
+				response += route.Method + " " + route.Path + "\n"
+			}
+
+			ctx.String(http.StatusOK, "%v", response)
+
+		}
+	})
 }

@@ -25,10 +25,9 @@ func TestEntityUser_ValidatePassword(t *testing.T) {
 func TestEntityUser_ValidatedSuccess(t *testing.T) {
 
 	arg := entity.EntityUser{
-		FirstName: "First Name",
-		LastName:  "Last Name",
-		Email:     "email@email.com",
-		Password:  "Password",
+		Name:     "Name",
+		Email:    "email@email.com",
+		Password: "Password",
 	}
 
 	user, err := entity.NewUser(arg)
@@ -42,10 +41,9 @@ func TestEntityUser_ValidatedSuccess(t *testing.T) {
 func TestEntityUser_ValidatedFail(t *testing.T) {
 
 	arg := entity.EntityUser{
-		FirstName: "",
-		LastName:  "",
-		Email:     "",
-		Password:  "",
+		Name:     "",
+		Email:    "",
+		Password: "",
 	}
 
 	user, err := entity.NewUser(arg)
