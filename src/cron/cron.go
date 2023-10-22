@@ -1,9 +1,6 @@
 package cron
 
 import (
-	"app/infrastructure/postgres"
-	"app/infrastructure/repository"
-	usecase_cloud_account "app/usecase/cloud_account"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -16,18 +13,18 @@ func StartCronJobs() {
 }
 
 func updateInstances() {
-	db := postgres.Connect()
+	// db := postgres.Connect()
 
-	repo := repository.NewCloudAccountPostgres(db)
+	// repo := repository.NewCloudAccountPostgres(db)
 
-	var usecase usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(repo)
+	// var usecase usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(repo)
 
-	cloudAccounts, _ := usecase.GetAll()
+	// cloudAccounts, _ := usecase.GetAll()
 
-	for _, cloudAccount := range cloudAccounts {
-		if cloudAccount.Active {
-			usecase.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+	// for _, cloudAccount := range cloudAccounts {
+	// 	if cloudAccount.Active {
+	// 		usecase.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
 
-		}
-	}
+	// 	}
+	// }
 }

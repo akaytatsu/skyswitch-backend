@@ -1,6 +1,9 @@
 package usecase_instance
 
-import "app/entity"
+import (
+	"app/entity"
+	"log"
+)
 
 type UseCaseInstance struct {
 	repo IRepositoryInstance
@@ -32,4 +35,22 @@ func (u *UseCaseInstance) DeleteInstance(instance *entity.EntityInstance) error 
 
 func (u *UseCaseInstance) ActiveDeactiveInstance(id int64, status bool) (instance *entity.EntityInstance, err error) {
 	return u.repo.ActiveDeactiveInstance(id, status)
+}
+
+func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance) error {
+
+	if instance.InstanceID != "" {
+		instanceLocal, err := u.repo.GetByInstanceID(instance.InstanceID)
+
+		if err != nil {
+			log.Println("Error on get instance by instance id: ", err)
+			return u.repo.CreateInstance(instance)
+		}
+
+		instance.ID = instanceLocal.ID
+
+		return u.repo.UpdateInstance(instance)
+	}
+
+	return u.repo.CreateInstance(instance)
 }

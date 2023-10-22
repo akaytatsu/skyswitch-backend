@@ -139,13 +139,14 @@ func (h *CloudAccountHandlers) ActiveDeactiveCloudAccountHandle(c *gin.Context) 
 func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 	handlers := NewCloudAccountHandlers(usecase_cloud_account.NewAWSService(
 		repository.NewCloudAccountPostgres(conn),
+		repository.NewInstancePostgres(conn),
 	))
 
 	usecaseUser := usecase_user.NewService(
 		repository.NewUserPostgres(conn),
 	)
 
-	group := r.Group("/cloud_account")
+	group := r.Group("api/cloud_account")
 	group.Use(middleware.AuthenticatedMiddleware(usecaseUser))
 
 	group.GET("/cloud_account", handlers.GetAllCloudAccountHandle)

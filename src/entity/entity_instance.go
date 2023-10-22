@@ -3,7 +3,7 @@ package entity
 import "time"
 
 type EntityInstance struct {
-	Id             int64  `gorm:"column:id;primary_key" json:"id"`
+	ID             int64  `gorm:"column:id;primary_key" json:"id"`
 	CloudAccountID int64  `gorm:"column:cloud_account_id" json:"cloud_account_id"`
 	InstanceID     string `gorm:"column:instance_id" json:"instance_id"`
 	InstanceType   string `gorm:"column:instance_type" json:"instance_type"`

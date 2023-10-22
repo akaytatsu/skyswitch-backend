@@ -55,7 +55,6 @@ func (h UserHandlers) LoginHandler(c *gin.Context) {
 	}
 
 	jsonResponse(c, http.StatusOK, gin.H{"token": token, "refreshToken": refreshToken})
-
 }
 
 func (h UserHandlers) GetMeHandler(c *gin.Context) {
@@ -201,5 +200,4 @@ func MountUsersHandlers(gin *gin.Engine, conn *gorm.DB) {
 	group.PUT("/password/:id", userHandlers.UpdatePasswordHandler)
 	group.GET("/list", userHandlers.GetUsersHandler)
 	group.GET("/:id", userHandlers.GetUserHandler)
-
 }

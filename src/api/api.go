@@ -31,6 +31,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 
 	handlers.MountCloudAccountHandlers(r, conn)
 	handlers.MountSamplesHandlers(r)
+	handlers.MountUsersHandlers(r, conn)
 
 	return r
 }

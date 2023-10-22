@@ -1,8 +1,13 @@
 package handlers
 
 import (
+	"app/infrastructure/postgres"
+	"app/infrastructure/repository"
+	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_instance "app/usecase/instance"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +28,16 @@ func HomeHandler(c *gin.Context) {
 		"message": "Hello World",
 	})
 
-	c.Request.Response.Header.Add("Content-Type", "application/json")
+	conn := postgres.Connect()
+
+	var usecaseCloudAccount usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
+		repository.NewCloudAccountPostgres(conn),
+		usecase_instance.NewService(repository.NewInstancePostgres(conn)),
+	)
+
+	usecaseCloudAccount.UpdateAllInstancesOnAllCloudAccountProvider()
+
+	// c.Request.Response.Header.Add("Content-Type", "application/json")
 }
 
 func XmlHandler(c *gin.Context) {
@@ -85,7 +99,7 @@ func MountSamplesHandlers(r *gin.Engine) {
 	group.GET("/secret", SecretHandler)
 	// group.GET("/routes", AllRoutesTextHandler)
 
-	group.GET("/routes", func(ctx *gin.Context) {
+	r.GET("/routes", func(ctx *gin.Context) {
 
 		type Route struct {
 			Method  string
@@ -111,7 +125,13 @@ func MountSamplesHandlers(r *gin.Engine) {
 			})
 
 			for _, route := range routes {
-				response += route.Method + " " + route.Path + "\n"
+				method := route.Method
+
+				if len(method) < 7 {
+					method = method + strings.Repeat(" ", 7-len(method))
+				}
+
+				response += method + " " + route.Path + "\n"
 			}
 
 			ctx.String(http.StatusOK, "%v", response)

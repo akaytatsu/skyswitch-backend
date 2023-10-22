@@ -26,7 +26,7 @@ type EntityUser struct {
 	ID        int
 	Name      string    `json:"name"       validate:"required,min=3,max=120"`
 	Email     string    `json:"email"      validate:"required,email"`
-	Password  string    `json:"password"   validate:"required,min=8,max=120"`
+	Password  string    `json:"password"   validate:"required,min=4,max=120"`
 	IsAdmin   bool      `json:"is_admin" gorm:"default:false"`
 	Active    bool      `json:"active" gorm:"default:true"`
 	CreatedAt time.Time `json:"created_at"`
@@ -37,16 +37,25 @@ func NewUser(userParam EntityUser) (*EntityUser, error) {
 
 	now := time.Now()
 
-	password, err := GeneratePassword(userParam.Password)
+	var password string
+	var err error
 
-	if err != nil {
-		return nil, err
+	if userParam.Password == "" {
+		password, err = GeneratePassword(userParam.Password)
+
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		password = userParam.Password
 	}
 
 	u := &EntityUser{
 		Name:      userParam.Name,
 		Email:     userParam.Email,
 		Password:  password,
+		IsAdmin:   userParam.IsAdmin,
+		Active:    userParam.Active,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}

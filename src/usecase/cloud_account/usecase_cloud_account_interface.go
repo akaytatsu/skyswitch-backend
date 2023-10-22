@@ -19,4 +19,5 @@ type IUsecaseCloudAccount interface {
 	DeleteCloudAccount(cloudAccount *entity.EntityCloudAccount) error
 	ActiveDeactiveCloudAccount(id int64, status bool) (cloudAccount *entity.EntityCloudAccount, err error)
 	UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error)
+	UpdateAllInstancesOnAllCloudAccountProvider() (instances []*entity.EntityInstance, err error)
 }

@@ -7,27 +7,27 @@ import (
 )
 
 type RepositoryCloudAccount struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewCloudAccountPostgres(db *gorm.DB) *RepositoryCloudAccount {
-	return &RepositoryCloudAccount{db: db}
+	return &RepositoryCloudAccount{DB: db}
 }
 
 func (u *RepositoryCloudAccount) GetAll() (cloudAccounts []*entity.EntityCloudAccount, err error) {
-	err = u.db.Find(&cloudAccounts).Error
+	err = u.DB.Find(&cloudAccounts).Error
 
 	return cloudAccounts, err
 }
 
 func (u *RepositoryCloudAccount) GetByID(id int64) (cloudAccount *entity.EntityCloudAccount, err error) {
-	err = u.db.Where("id = ?", id).First(&cloudAccount).Error
+	err = u.DB.Where("id = ?", id).First(&cloudAccount).Error
 
 	return cloudAccount, err
 }
 
 func (u *RepositoryCloudAccount) CreateCloudAccount(cloudAccount *entity.EntityCloudAccount) error {
-	return u.db.Create(&cloudAccount).Error
+	return u.DB.Create(&cloudAccount).Error
 }
 
 func (u *RepositoryCloudAccount) UpdateCloudAccount(cloudAccount *entity.EntityCloudAccount) error {
@@ -38,7 +38,7 @@ func (u *RepositoryCloudAccount) UpdateCloudAccount(cloudAccount *entity.EntityC
 		return err
 	}
 
-	return u.db.Save(&cloudAccount).Error
+	return u.DB.Save(&cloudAccount).Error
 }
 
 func (u *RepositoryCloudAccount) DeleteCloudAccount(cloudAccount *entity.EntityCloudAccount) error {
@@ -49,7 +49,7 @@ func (u *RepositoryCloudAccount) DeleteCloudAccount(cloudAccount *entity.EntityC
 		return err
 	}
 
-	return u.db.Delete(&cloudAccount).Error
+	return u.DB.Delete(&cloudAccount).Error
 }
 
 func (u *RepositoryCloudAccount) ActiveDeactiveCloudAccount(id int64, status bool) (cloudAccount *entity.EntityCloudAccount, err error) {
@@ -62,5 +62,5 @@ func (u *RepositoryCloudAccount) ActiveDeactiveCloudAccount(id int64, status boo
 
 	cloudAccount.Active = status
 
-	return cloudAccount, u.db.Save(&cloudAccount).Error
+	return cloudAccount, u.DB.Save(&cloudAccount).Error
 }

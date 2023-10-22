@@ -185,6 +185,7 @@ func (u *UseCaseUser) CreateAdminUser() error {
 		Email:    os.Getenv("DEFAULT_ADMIN_MAIL"),
 		Password: os.Getenv("DEFAULT_ADMIN_PASSWORD"),
 		IsAdmin:  true,
+		Active:   true,
 	})
 
 	if err != nil {

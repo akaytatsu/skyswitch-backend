@@ -2,7 +2,8 @@ package usecase_cloud_account
 
 import (
 	"app/entity"
-	"fmt"
+	usecase_instance "app/usecase/instance"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -11,11 +12,12 @@ import (
 )
 
 type UseCaseAWSCloudAccount struct {
-	repo IRepositoryCloudAccount
+	repo             IRepositoryCloudAccount
+	useCaseInstances usecase_instance.IUseCaseInstance
 }
 
-func NewAWSService(repository IRepositoryCloudAccount) *UseCaseAWSCloudAccount {
-	return &UseCaseAWSCloudAccount{repo: repository}
+func NewAWSService(repository IRepositoryCloudAccount, usecaseInstances usecase_instance.IUseCaseInstance) *UseCaseAWSCloudAccount {
+	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances}
 }
 
 func (u *UseCaseAWSCloudAccount) GetAll() (cloudAccounts []*entity.EntityCloudAccount, err error) {
@@ -42,6 +44,23 @@ func (u *UseCaseAWSCloudAccount) ActiveDeactiveCloudAccount(id int64, status boo
 	return u.repo.ActiveDeactiveCloudAccount(id, status)
 }
 
+func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnAllCloudAccountProvider() (instances []*entity.EntityInstance, err error) {
+
+	cloudAccounts, err := u.repo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cloudAccount := range cloudAccounts {
+		instances, err = u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+		if err != nil {
+			log.Println("Error updating all instances on cloud account provider: ", err)
+		}
+	}
+
+	return instances, nil
+}
+
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error) {
 
 	aws_access_key := cloudAccount.AccessKeyID
@@ -49,7 +68,20 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 
 	client := u.getAwsClient(aws_access_key, aws_secret_key)
 
-	u.getAwsEC2AllInstances(client)
+	instances, err = u.getAwsEC2AllInstances(cloudAccount, client)
+
+	if err != nil {
+		return instances, err
+	}
+
+	for _, instance := range instances {
+
+		err = u.useCaseInstances.CreateOrUpdateInstance(instance)
+
+		if err != nil {
+			log.Println("Error creating or updating instance: ", err)
+		}
+	}
 
 	return make([]*entity.EntityInstance, 0), nil
 }
@@ -65,7 +97,9 @@ func (u *UseCaseAWSCloudAccount) getAwsClient(aws_access_key string, aws_secret_
 
 }
 
-func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(sess *session.Session) {
+func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(cloudAccount *entity.EntityCloudAccount, sess *session.Session) (instances []*entity.EntityInstance, err error) {
+
+	instances = make([]*entity.EntityInstance, 0)
 
 	// Create new EC2 client
 	svc := ec2.New(sess)
@@ -73,26 +107,31 @@ func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(sess *session.Session) {
 	// Call to get detailed information on each instance
 	result, err := svc.DescribeInstances(nil)
 	if err != nil {
-		fmt.Println("Error", err)
+		return instances, err
 	}
 
 	for _, reservations := range result.Reservations {
 		for _, instance := range reservations.Instances {
-			fmt.Println("Instance ID: " + *instance.InstanceId)
-			fmt.Println("Instance Type: " + *instance.InstanceType)
-			fmt.Println("Public IP Address: " + *instance.PublicIpAddress)
-			fmt.Println("Private IP Address: " + *instance.PrivateIpAddress)
-			fmt.Println("Instance State: " + *instance.State.Name)
-			fmt.Println("DNS Name: " + *instance.PublicDnsName)
-			fmt.Println("Key Name: " + *instance.KeyName)
-			fmt.Println("AMI ID: " + *instance.ImageId)
-			fmt.Println("Launch Time: " + (*instance.LaunchTime).Format("2006-01-02 15:04:05 Monday"))
-			fmt.Println("Tags:")
+
+			var name string
+
 			for _, tag := range instance.Tags {
-				fmt.Println("  " + *tag.Key + ": " + *tag.Value)
+				if *tag.Key == "Name" {
+					name = *tag.Value
+				}
 			}
-			fmt.Println("")
+
+			instances = append(instances, &entity.EntityInstance{
+				CloudAccountID: cloudAccount.ID,
+				InstanceID:     *instance.InstanceId,
+				InstanceType:   *instance.InstanceType,
+				InstanceName:   name,
+				InstanceRegion: *instance.Placement.AvailabilityZone,
+				InstanceState:  *instance.State.Name,
+				Active:         true,
+			})
 		}
 	}
 
+	return instances, nil
 }
