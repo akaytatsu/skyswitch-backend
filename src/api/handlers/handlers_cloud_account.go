@@ -20,6 +20,14 @@ func NewCloudAccountHandlers(usecaseCloudAccount usecase_cloud_account.IUsecaseC
 	return &CloudAccountHandlers{usecaseCloudAccount: usecaseCloudAccount}
 }
 
+// @Summary Get all cloud accounts
+// @Description Get all cloud accounts
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} entity.EntityCloudAccount "success"
+// @Router /api/cloud_account/cloud_account [get]
 func (h *CloudAccountHandlers) GetAllCloudAccountHandle(c *gin.Context) {
 	cloudAccounts, err := h.usecaseCloudAccount.GetAll()
 	if err != nil {

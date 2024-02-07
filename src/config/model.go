@@ -1,6 +1,8 @@
 package config
 
 type EnvironmentVars struct {
+	ISRELEASE bool
+
 	POSTGRES_DB       string
 	POSTGRES_USER     string
 	POSTGRES_PASSWORD string
