@@ -21,7 +21,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/cloud_account/cloud_account:
+  /api/cloud_account/:
     get:
       consumes:
       - application/json
@@ -36,6 +36,95 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get all cloud accounts
+      tags:
+      - CloudAccount
+    put:
+      consumes:
+      - application/json
+      description: Update cloud account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCloudAccount'
+      security:
+      - ApiKeyAuth: []
+      summary: Update cloud account
+      tags:
+      - CloudAccount
+  /api/cloud_account/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete cloud account
+      parameters:
+      - description: Cloud Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete cloud account
+      tags:
+      - CloudAccount
+    get:
+      consumes:
+      - application/json
+      description: Get cloud account by id
+      parameters:
+      - description: Cloud Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCloudAccount'
+      security:
+      - ApiKeyAuth: []
+      summary: Get cloud account by id
+      tags:
+      - CloudAccount
+  /api/cloud_account/{id}/{status}:
+    get:
+      consumes:
+      - application/json
+      description: Active/Deactive cloud account
+      parameters:
+      - description: Cloud Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Status
+        in: path
+        name: status
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCloudAccount'
+      security:
+      - ApiKeyAuth: []
+      summary: Active/Deactive cloud account
       tags:
       - CloudAccount
 swagger: "2.0"

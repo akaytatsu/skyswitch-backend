@@ -27,7 +27,7 @@ func NewCloudAccountHandlers(usecaseCloudAccount usecase_cloud_account.IUsecaseC
 // @Produce  json
 // @Security ApiKeyAuth
 // @Success 200 {object} entity.EntityCloudAccount "success"
-// @Router /api/cloud_account/cloud_account [get]
+// @Router /api/cloud_account/ [get]
 func (h *CloudAccountHandlers) GetAllCloudAccountHandle(c *gin.Context) {
 	cloudAccounts, err := h.usecaseCloudAccount.GetAll()
 	if err != nil {
@@ -42,6 +42,15 @@ func (h *CloudAccountHandlers) GetAllCloudAccountHandle(c *gin.Context) {
 	})
 }
 
+// @Summary Get cloud account by id
+// @Description Get cloud account by id
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "Cloud Account ID"
+// @Success 200 {object} entity.EntityCloudAccount "success"
+// @Router /api/cloud_account/{id} [get]
 func (h *CloudAccountHandlers) GetByIDCloudAccountHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -81,6 +90,14 @@ func (h *CloudAccountHandlers) CreateCloudAccountHandle(c *gin.Context) {
 	})
 }
 
+// @Summary Update cloud account
+// @Description Update cloud account
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Success 200 {object} entity.EntityCloudAccount "success"
+// @Router /api/cloud_account/ [put]
 func (h *CloudAccountHandlers) UpdateCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)
@@ -104,6 +121,15 @@ func (h *CloudAccountHandlers) UpdateCloudAccountHandle(c *gin.Context) {
 	})
 }
 
+// @Summary Delete cloud account
+// @Description Delete cloud account
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "Cloud Account ID"
+// @Success 200 {string} string "success"
+// @Router /api/cloud_account/{id} [delete]
 func (h *CloudAccountHandlers) DeleteCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)
@@ -127,6 +153,16 @@ func (h *CloudAccountHandlers) DeleteCloudAccountHandle(c *gin.Context) {
 	})
 }
 
+// @Summary Active/Deactive cloud account
+// @Description Active/Deactive cloud account
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "Cloud Account ID"
+// @Param status path bool true "Status"
+// @Success 200 {object} entity.EntityCloudAccount "success"
+// @Router /api/cloud_account/{id}/{status} [get]
 func (h *CloudAccountHandlers) ActiveDeactiveCloudAccountHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	status, _ := strconv.ParseBool(c.Param("status"))
@@ -157,10 +193,10 @@ func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 	group := r.Group("api/cloud_account")
 	group.Use(middleware.AuthenticatedMiddleware(usecaseUser))
 
-	group.GET("/cloud_account", handlers.GetAllCloudAccountHandle)
-	group.GET("/cloud_account/:id", handlers.GetByIDCloudAccountHandle)
-	group.POST("/cloud_account", handlers.CreateCloudAccountHandle)
-	group.PUT("/cloud_account", handlers.UpdateCloudAccountHandle)
-	group.DELETE("/cloud_account", handlers.DeleteCloudAccountHandle)
-	group.GET("/cloud_account/:id/:status", handlers.ActiveDeactiveCloudAccountHandle)
+	group.GET("/", handlers.GetAllCloudAccountHandle)
+	group.GET("/:id", handlers.GetByIDCloudAccountHandle)
+	group.POST("/", handlers.CreateCloudAccountHandle)
+	group.PUT("/", handlers.UpdateCloudAccountHandle)
+	group.DELETE("/:id", handlers.DeleteCloudAccountHandle)
+	group.GET("/:id/:status", handlers.ActiveDeactiveCloudAccountHandle)
 }
