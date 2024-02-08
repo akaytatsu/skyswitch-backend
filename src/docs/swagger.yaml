@@ -18,6 +18,17 @@ definitions:
       updatedAt:
         type: string
     type: object
+  entity.EntityHoliday:
+    properties:
+      createdAt:
+        type: string
+      date:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   entity.EntityInstance:
     properties:
       active:
@@ -212,6 +223,57 @@ paths:
       summary: Active/Deactive cloud account
       tags:
       - CloudAccount
+  /api/holiday/:
+    get:
+      consumes:
+      - application/json
+      description: Get All Holidays
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityHoliday'
+      security:
+      - ApiKeyAuth: []
+      summary: Get All Holidays
+      tags:
+      - Holiday
+    post:
+      consumes:
+      - application/json
+      description: Create Or Update Holiday
+      parameters:
+      - description: Holiday
+        in: body
+        name: entity.EntityHoliday
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityHoliday'
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityHoliday'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Or Update Holiday
+      tags:
+      - Holiday
   /api/instances/:
     get:
       consumes:

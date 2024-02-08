@@ -229,6 +229,87 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/holiday/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get All Holidays",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Holiday"
+                ],
+                "summary": "Get All Holidays",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create Or Update Holiday",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Holiday"
+                ],
+                "summary": "Create Or Update Holiday",
+                "parameters": [
+                    {
+                        "description": "Holiday",
+                        "name": "entity.EntityHoliday",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
+                    }
+                }
+            }
+        },
         "/api/instances/": {
             "get": {
                 "security": [
@@ -639,6 +720,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "secret_access_key": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.EntityHoliday": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 },
                 "updatedAt": {

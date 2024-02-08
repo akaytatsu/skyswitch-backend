@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	"app/api/middleware"
 	"app/entity"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
-	usecase_user "app/usecase/user"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -196,12 +194,8 @@ func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 		repository.NewInstancePostgres(conn),
 	))
 
-	usecaseUser := usecase_user.NewService(
-		repository.NewUserPostgres(conn),
-	)
-
 	group := r.Group("api/cloud_account")
-	group.Use(middleware.AuthenticatedMiddleware(usecaseUser))
+	SetAuthMiddleware(conn, group)
 
 	group.GET("/", handlers.GetAllCloudAccountHandle)
 	group.GET("/:id", handlers.GetByIDCloudAccountHandle)

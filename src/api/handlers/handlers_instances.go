@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"app/api/middleware"
 	"app/infrastructure/repository"
 	usecase_instance "app/usecase/instance"
-	usecase_user "app/usecase/user"
 	"net/http"
 	"strconv"
 
@@ -62,12 +60,8 @@ func MountInstancesRoutes(r *gin.Engine, conn *gorm.DB) {
 		repository.NewInstancePostgres(conn),
 	))
 
-	usecaseUser := usecase_user.NewService(
-		repository.NewUserPostgres(conn),
-	)
-
 	group := r.Group("/api/instances")
-	group.Use(middleware.AuthenticatedMiddleware(usecaseUser))
+	SetAuthMiddleware(conn, group)
 
 	group.GET("/", instanceHandlers.GetAllInstancesHandler)
 	group.GET("/:id", instanceHandlers.GetByIDInstanceHandler)
