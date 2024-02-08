@@ -38,18 +38,23 @@ func NewUserHandler(usecaseUser usecase_user.IUsecaseUser) *UserHandlers {
 // @Tags User
 // @Accept  json
 // @Produce  json
-// @Param email body string true "Email"
-// @Param password body string true "Password"
+// @Param loginData body handlers.LoginData true "Login data"
 // @Success 200 {object} entity.EntityUser "success"
 // @Router /api/login [post]
 func (h UserHandlers) LoginHandler(c *gin.Context) {
 
 	var loginData LoginData
 
+	println("LoginHandler")
+
 	if err := c.ShouldBindJSON(&loginData); err != nil {
 		handleError(c, err)
 		return
 	}
+
+	println("loginData.Email")
+	println(loginData.Email)
+	println(loginData.Password)
 
 	user, err := h.UsecaseUser.LoginUser(loginData.Email, loginData.Password)
 

@@ -22,6 +22,9 @@ func AuthenticatedMiddleware(usercase usecase_user.IUsecaseUser) gin.HandlerFunc
 
 		token := strings.Split(bearerToken, " ")[1]
 
+		println("token")
+		println(token)
+
 		user, err := usercase.GetUserByToken(token)
 
 		// check if token is valid

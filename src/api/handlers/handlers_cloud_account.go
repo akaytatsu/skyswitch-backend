@@ -67,6 +67,16 @@ func (h *CloudAccountHandlers) GetByIDCloudAccountHandle(c *gin.Context) {
 	})
 }
 
+// @Summary Create cloud account
+// @Description Create cloud account
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param entity.EntityCloudAccount body entity.EntityCloudAccount true "Cloud Account"
+// @Param Authorization header string true "Bearer Token"
+// @Success 201 {string} string "success"
+// @Router /api/cloud_account/ [post]
 func (h *CloudAccountHandlers) CreateCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)

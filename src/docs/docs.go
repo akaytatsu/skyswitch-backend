@@ -67,6 +67,50 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create cloud account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudAccount"
+                ],
+                "summary": "Create cloud account",
+                "parameters": [
+                    {
+                        "description": "Cloud Account",
+                        "name": "entity.EntityCloudAccount",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCloudAccount"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/api/cloud_account/{id}": {
@@ -185,6 +229,87 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/instances/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get all instances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Instances"
+                ],
+                "summary": "Get all instances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityInstance"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/instances/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get instance by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Instances"
+                ],
+                "summary": "Get instance by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Instance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityInstance"
+                        }
+                    }
+                }
+            }
+        },
         "/api/login": {
             "post": {
                 "description": "Login",
@@ -200,21 +325,12 @@ const docTemplate = `{
                 "summary": "Login",
                 "parameters": [
                     {
-                        "description": "Email",
-                        "name": "email",
+                        "description": "Login data",
+                        "name": "loginData",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Password",
-                        "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handlers.LoginData"
                         }
                     }
                 ],
@@ -530,6 +646,41 @@ const docTemplate = `{
                 }
             }
         },
+        "entity.EntityInstance": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "cloud_account_id": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "instance_id": {
+                    "type": "string"
+                },
+                "instance_name": {
+                    "type": "string"
+                },
+                "instance_region": {
+                    "type": "string"
+                },
+                "instance_state": {
+                    "type": "string"
+                },
+                "instance_type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.EntityUser": {
             "type": "object",
             "required": [
@@ -564,6 +715,17 @@ const docTemplate = `{
                     "minLength": 4
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.LoginData": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }

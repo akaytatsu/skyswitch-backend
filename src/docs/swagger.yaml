@@ -18,6 +18,29 @@ definitions:
       updatedAt:
         type: string
     type: object
+  entity.EntityInstance:
+    properties:
+      active:
+        type: boolean
+      cloud_account_id:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: integer
+      instance_id:
+        type: string
+      instance_name:
+        type: string
+      instance_region:
+        type: string
+      instance_state:
+        type: string
+      instance_type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   entity.EntityUser:
     properties:
       active:
@@ -45,6 +68,13 @@ definitions:
     - name
     - password
     type: object
+  handlers.LoginData:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -63,6 +93,34 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get all cloud accounts
+      tags:
+      - CloudAccount
+    post:
+      consumes:
+      - application/json
+      description: Create cloud account
+      parameters:
+      - description: Cloud Account
+        in: body
+        name: entity.EntityCloudAccount
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityCloudAccount'
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create cloud account
       tags:
       - CloudAccount
     put:
@@ -154,24 +212,69 @@ paths:
       summary: Active/Deactive cloud account
       tags:
       - CloudAccount
+  /api/instances/:
+    get:
+      consumes:
+      - application/json
+      description: Get all instances
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityInstance'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all instances
+      tags:
+      - Instances
+  /api/instances/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get instance by id
+      parameters:
+      - description: Instance ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityInstance'
+      security:
+      - ApiKeyAuth: []
+      summary: Get instance by id
+      tags:
+      - Instances
   /api/login:
     post:
       consumes:
       - application/json
       description: Login
       parameters:
-      - description: Email
+      - description: Login data
         in: body
-        name: email
+        name: loginData
         required: true
         schema:
-          type: string
-      - description: Password
-        in: body
-        name: password
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/handlers.LoginData'
       produces:
       - application/json
       responses:
