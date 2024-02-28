@@ -6,6 +6,7 @@ import (
 	"app/cron"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	"app/kafka"
 	usecase_user "app/usecase/user"
 	"log"
 )
@@ -21,6 +22,8 @@ func main() {
 	usecase := usecase_user.NewService(
 		repository.NewUserPostgres(conn),
 	)
+
+	go kafka.StartKafka()
 
 	err := usecase.CreateAdminUser()
 	if err != nil {

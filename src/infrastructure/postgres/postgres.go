@@ -26,6 +26,7 @@ func Migrations() {
 	db.AutoMigrate(&entity.EntityUser{})
 	db.AutoMigrate(&entity.EntityCloudAccount{})
 	db.AutoMigrate(&entity.EntityInstance{})
+	db.AutoMigrate(&entity.EntityHoliday{})
 }
 
 func conn() *gorm.DB {

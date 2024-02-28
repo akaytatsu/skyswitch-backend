@@ -25,7 +25,7 @@ import (
 
 func HomeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Hello World",
+		"message": "Hello World ssssss",
 	})
 
 	conn := postgres.Connect()

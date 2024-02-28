@@ -12,6 +12,7 @@ type EnvironmentVars struct {
 	KAFKA_BOOTSTRAP_SERVER string
 	KAFKA_CLIENT_ID        string
 	KAFKA_GROUP_ID         string
+	KAFKA_HOLIDAY_TOPIC    string
 
 	AWS_ACCESS_KEY string
 	AWS_SECRET_KEY string
