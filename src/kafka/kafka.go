@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"app/config"
+	"app/entity"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_holiday "app/usecase/holiday"
@@ -15,7 +16,7 @@ func StartKafka() {
 	db := postgres.Connect()
 
 	repoHoliday := repository.NewHolidayPostgres(db)
-	usecaseHoliday := usecase_holiday.NewHolidayService(repoHoliday)
+	usecaseHoliday := usecase_holiday.NewService(repoHoliday)
 
 	var topicParams []KafkaReadTopicsParams
 
@@ -37,7 +38,11 @@ func StartKafka() {
 					return err
 				}
 
-				_, err = usecaseHoliday.CreateUpdate("", date)
+				err = usecaseHoliday.Create(
+					&entity.EntityHoliday{
+						Date: date,
+					},
+				)
 
 				if err != nil {
 					return err

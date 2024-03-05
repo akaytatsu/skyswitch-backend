@@ -2,7 +2,10 @@ package repository
 
 import (
 	"app/entity"
+	"strings"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
@@ -14,10 +17,42 @@ func NewInstancePostgres(DB *gorm.DB) *RepositoryInstance {
 	return &RepositoryInstance{DB: DB}
 }
 
-func (u *RepositoryInstance) GetAll() (instances []*entity.EntityInstance, err error) {
-	err = u.DB.Find(&instances).Error
+func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstanceParams) (response []entity.EntityInstance, totalRegisters int64, err error) {
+	offset := (searchParams.Page) * searchParams.PageSize
 
-	return instances, err
+	qry := u.DB.Model(entity.EntityInstance{})
+
+	if gin.IsDebugging() {
+		qry = qry.Debug()
+	}
+
+	if searchParams.CreatedAt != "" {
+		dates := strings.Split(searchParams.CreatedAt, ",")
+		if len(dates) == 2 {
+			_, err1 := time.Parse("2006-01-02", dates[0])
+			_, err2 := time.Parse("2006-01-02", dates[1])
+			if err1 == nil && err2 == nil {
+				qry = qry.Where("created_at BETWEEN ? AND ?", dates[0], dates[1])
+			}
+		}
+	}
+
+	err = qry.Count(&totalRegisters).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
+		Offset(offset).
+		Limit(searchParams.PageSize)
+
+	err = qry.Find(&response).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return response, totalRegisters, nil
 }
 
 func (u *RepositoryInstance) GetByID(id int64) (instance *entity.EntityInstance, err error) {

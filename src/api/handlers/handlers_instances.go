@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"app/entity"
 	"app/infrastructure/repository"
 	usecase_instance "app/usecase/instance"
 	"net/http"
@@ -28,11 +29,32 @@ func NewIntancesHandlers(usecaseInstances usecase_instance.IUseCaseInstance) *In
 // @Success 200 {object} entity.EntityInstance "success"
 // @Router /api/instances/ [get]
 func (h *IntancesHandlers) GetAllInstancesHandler(c *gin.Context) {
-	instances, err := h.usecaseInstances.GetAll()
+
+	orderBy, sortOrder := getOrderByParams(c, "updated_at")
+	pagina, tamanhoPagina := getPaginationParams(c)
+
+	params := entity.SearchEntityInstanceParams{
+		OrderBy:   orderBy,
+		SortOrder: sortOrder,
+		Page:      pagina,
+		PageSize:  tamanhoPagina,
+		Q:         c.Query("q"),
+		CreatedAt: c.Query("created_at"),
+	}
+
+	instances, totalRegs, err := h.usecaseInstances.GetAll(params)
 	if exception := handleError(c, err); exception {
 		return
 	}
-	jsonResponse(c, http.StatusOK, instances)
+
+	paginationResponse := PaginationResponse{
+		TotalPages:     getTotalPaginas(totalRegs, tamanhoPagina),
+		Page:           pagina,
+		TotalRegisters: int(totalRegs),
+		Registers:      instances,
+	}
+
+	c.JSON(http.StatusOK, paginationResponse)
 }
 
 // @Summary Get instance by id

@@ -20,8 +20,8 @@ func NewAWSService(repository IRepositoryCloudAccount, usecaseInstances usecase_
 	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances}
 }
 
-func (u *UseCaseAWSCloudAccount) GetAll() (cloudAccounts []*entity.EntityCloudAccount, err error) {
-	return u.repo.GetAll()
+func (u *UseCaseAWSCloudAccount) GetAll(searchParams entity.SearchEntityCloudAccountParams) (response []entity.EntityCloudAccount, totalRegisters int64, err error) {
+	return u.repo.GetAll(searchParams)
 }
 
 func (u *UseCaseAWSCloudAccount) GetByID(id int64) (cloudAccount *entity.EntityCloudAccount, err error) {
@@ -46,13 +46,18 @@ func (u *UseCaseAWSCloudAccount) ActiveDeactiveCloudAccount(id int64, status boo
 
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnAllCloudAccountProvider() (instances []*entity.EntityInstance, err error) {
 
-	cloudAccounts, err := u.repo.GetAll()
+	params := entity.SearchEntityCloudAccountParams{
+		Page:     0,
+		PageSize: 10000,
+	}
+
+	cloudAccounts, _, err := u.repo.GetAll(params)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, cloudAccount := range cloudAccounts {
-		instances, err = u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+		instances, err = u.UpdateAllInstancesOnCloudAccountProvider(&cloudAccount)
 		if err != nil {
 			log.Println("Error updating all instances on cloud account provider: ", err)
 		}
@@ -134,4 +139,13 @@ func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(cloudAccount *entity.Enti
 	}
 
 	return instances, nil
+}
+
+func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProviderFromID(id int) (instances []*entity.EntityInstance, err error) {
+	cloudAccount, err := u.GetByID(int64(id))
+	if err != nil {
+		return nil, err
+	}
+
+	return u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
 }

@@ -20,13 +20,13 @@ definitions:
     type: object
   entity.EntityHoliday:
     properties:
-      createdAt:
+      created_at:
         type: string
       date:
         type: string
-      name:
-        type: string
-      updatedAt:
+      id:
+        type: integer
+      updated_at:
         type: string
     type: object
   entity.EntityInstance:
@@ -89,7 +89,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/cloud_account/:
+  /api/cloudaccount/:
     get:
       consumes:
       - application/json
@@ -150,7 +150,7 @@ paths:
       summary: Update cloud account
       tags:
       - CloudAccount
-  /api/cloud_account/{id}:
+  /api/cloudaccount/{id}:
     delete:
       consumes:
       - application/json
@@ -195,7 +195,7 @@ paths:
       summary: Get cloud account by id
       tags:
       - CloudAccount
-  /api/cloud_account/{id}/{status}:
+  /api/cloudaccount/{id}/{status}:
     get:
       consumes:
       - application/json
@@ -223,45 +223,78 @@ paths:
       summary: Active/Deactive cloud account
       tags:
       - CloudAccount
-  /api/holiday/:
+  /api/cloudaccount/update-all-instances/{id}:
     get:
       consumes:
       - application/json
-      description: Get All Holidays
+      description: Update all instances of cloud account provider
       parameters:
-      - description: Bearer Token
-        in: header
-        name: Authorization
+      - description: Cloud Account ID
+        in: path
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: success
           schema:
-            $ref: '#/definitions/entity.EntityHoliday'
+            type: string
       security:
       - ApiKeyAuth: []
-      summary: Get All Holidays
+      summary: Update all instances of cloud account provider
+      tags:
+      - CloudAccount
+  /api/holiday:
+    get:
+      consumes:
+      - application/json
+      description: Get All Holiday
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityHoliday'
+            type: array
+      summary: Get All Holiday
       tags:
       - Holiday
     post:
       consumes:
       - application/json
-      description: Create Or Update Holiday
+      description: Create Holiday
       parameters:
       - description: Holiday
         in: body
-        name: entity.EntityHoliday
+        name: holiday
         required: true
         schema:
           $ref: '#/definitions/entity.EntityHoliday'
-      - description: Bearer Token
-        in: header
-        name: Authorization
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityHoliday'
+      summary: Create Holiday
+      tags:
+      - Holiday
+    put:
+      consumes:
+      - application/json
+      description: Update Holiday
+      parameters:
+      - description: Holiday
+        in: body
+        name: holiday
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/entity.EntityHoliday'
       produces:
       - application/json
       responses:
@@ -269,9 +302,48 @@ paths:
           description: success
           schema:
             $ref: '#/definitions/entity.EntityHoliday'
-      security:
-      - ApiKeyAuth: []
-      summary: Create Or Update Holiday
+      summary: Update Holiday
+      tags:
+      - Holiday
+  /api/holiday/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Holiday
+      parameters:
+      - description: Holiday ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityHoliday'
+      summary: Delete Holiday
+      tags:
+      - Holiday
+    get:
+      consumes:
+      - application/json
+      description: Get Holiday
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityHoliday'
+      summary: Get Holiday
       tags:
       - Holiday
   /api/instances/:
@@ -331,9 +403,9 @@ paths:
       - application/json
       description: Login
       parameters:
-      - description: Login data
+      - description: LoginData
         in: body
-        name: loginData
+        name: handlers.LoginData
         required: true
         schema:
           $ref: '#/definitions/handlers.LoginData'
@@ -348,17 +420,19 @@ paths:
       tags:
       - User
   /api/user/:
-    post:
+    get:
       consumes:
       - application/json
-      description: Create user
+      description: Get users
       parameters:
-      - description: User
-        in: body
-        name: entity.EntityUser
-        required: true
-        schema:
-          $ref: '#/definitions/entity.EntityUser'
+      - description: Search
+        in: query
+        name: search
+        type: string
+      - description: Active
+        in: query
+        name: active
+        type: string
       produces:
       - application/json
       responses:
@@ -368,7 +442,7 @@ paths:
             $ref: '#/definitions/entity.EntityUser'
       security:
       - ApiKeyAuth: []
-      summary: Create user
+      summary: Get users
       tags:
       - User
   /api/user/{id}:
@@ -444,20 +518,18 @@ paths:
       summary: Update user
       tags:
       - User
-  /api/user/list:
-    get:
+  /api/user/create:
+    post:
       consumes:
       - application/json
-      description: Get users
+      description: Create user
       parameters:
-      - description: Search
-        in: query
-        name: search
-        type: string
-      - description: Active
-        in: query
-        name: active
-        type: string
+      - description: User
+        in: body
+        name: entity.EntityUser
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityUser'
       produces:
       - application/json
       responses:
@@ -467,7 +539,7 @@ paths:
             $ref: '#/definitions/entity.EntityUser'
       security:
       - ApiKeyAuth: []
-      summary: Get users
+      summary: Create user
       tags:
       - User
   /api/user/me:

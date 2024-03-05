@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/cloud_account/": {
+        "/api/cloudaccount/": {
             "get": {
                 "security": [
                     {
@@ -113,7 +113,44 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cloud_account/{id}": {
+        "/api/cloudaccount/update-all-instances/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update all instances of cloud account provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudAccount"
+                ],
+                "summary": "Update all instances of cloud account provider",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Cloud Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cloudaccount/{id}": {
             "get": {
                 "security": [
                     {
@@ -185,7 +222,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cloud_account/{id}/{status}": {
+        "/api/cloudaccount/{id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -229,14 +266,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/holiday/": {
+        "/api/holiday": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Get All Holidays",
+                "description": "Get All Holiday",
                 "consumes": [
                     "application/json"
                 ],
@@ -246,14 +278,40 @@ const docTemplate = `{
                 "tags": [
                     "Holiday"
                 ],
-                "summary": "Get All Holidays",
+                "summary": "Get All Holiday",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityHoliday"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Holiday",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Holiday"
+                ],
+                "summary": "Update Holiday",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
+                        "description": "Holiday",
+                        "name": "holiday",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
                     }
                 ],
                 "responses": {
@@ -266,12 +324,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Create Or Update Holiday",
+                "description": "Create Holiday",
                 "consumes": [
                     "application/json"
                 ],
@@ -281,22 +334,77 @@ const docTemplate = `{
                 "tags": [
                     "Holiday"
                 ],
-                "summary": "Create Or Update Holiday",
+                "summary": "Create Holiday",
                 "parameters": [
                     {
                         "description": "Holiday",
-                        "name": "entity.EntityHoliday",
+                        "name": "holiday",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/entity.EntityHoliday"
                         }
-                    },
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/holiday/{id}": {
+            "get": {
+                "description": "Get Holiday",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Holiday"
+                ],
+                "summary": "Get Holiday",
+                "parameters": [
                     {
-                        "type": "string",
-                        "description": "Bearer Token",
-                        "name": "Authorization",
-                        "in": "header",
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityHoliday"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Holiday",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Holiday"
+                ],
+                "summary": "Delete Holiday",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Holiday ID",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -406,8 +514,8 @@ const docTemplate = `{
                 "summary": "Login",
                 "parameters": [
                     {
-                        "description": "Login data",
-                        "name": "loginData",
+                        "description": "LoginData",
+                        "name": "handlers.LoginData",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -426,45 +534,6 @@ const docTemplate = `{
             }
         },
         "/api/user/": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Create user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Create user",
-                "parameters": [
-                    {
-                        "description": "User",
-                        "name": "entity.EntityUser",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entity.EntityUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/entity.EntityUser"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/user/list": {
             "get": {
                 "security": [
                     {
@@ -494,6 +563,45 @@ const docTemplate = `{
                         "description": "Active",
                         "name": "active",
                         "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityUser"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create user",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "entity.EntityUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityUser"
+                        }
                     }
                 ],
                 "responses": {
@@ -730,16 +838,16 @@ const docTemplate = `{
         "entity.EntityHoliday": {
             "type": "object",
             "properties": {
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "date": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
-                "updatedAt": {
+                "updated_at": {
                     "type": "string"
                 }
             }

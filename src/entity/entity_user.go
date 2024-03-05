@@ -23,14 +23,16 @@ type EntityUserFilters struct {
 }
 
 type EntityUser struct {
-	ID        int
+	ID        int       `json:"id"         gorm:"primaryKey"`
 	Name      string    `json:"name"       validate:"required,min=3,max=120"`
-	Email     string    `json:"email"      validate:"required,email"`
+	Email     string    `json:"email"      validate:"required,email" gorm:"unique"`
 	Password  string    `json:"password"   validate:"required,min=4,max=120"`
 	IsAdmin   bool      `json:"is_admin" gorm:"default:false"`
 	Active    bool      `json:"active" gorm:"default:true"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"autoUpdateTime"`
+	// EntityRegistration EntityRegistration
+	// EntityExhibitor    EntityExhibitor
 }
 
 func NewUser(userParam EntityUser) (*EntityUser, error) {

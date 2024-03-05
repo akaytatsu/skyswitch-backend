@@ -4,6 +4,7 @@ import (
 	"app/entity"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -25,19 +26,35 @@ func NewCloudAccountHandlers(usecaseCloudAccount usecase_cloud_account.IUsecaseC
 // @Produce  json
 // @Security ApiKeyAuth
 // @Success 200 {object} entity.EntityCloudAccount "success"
-// @Router /api/cloud_account/ [get]
+// @Router /api/cloudaccount/ [get]
 func (h *CloudAccountHandlers) GetAllCloudAccountHandle(c *gin.Context) {
-	cloudAccounts, err := h.usecaseCloudAccount.GetAll()
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": err.Error(),
-		})
+
+	orderBy, sortOrder := getOrderByParams(c, "updated_at")
+	pagina, tamanhoPagina := getPaginationParams(c)
+
+	params := entity.SearchEntityCloudAccountParams{
+		OrderBy:   orderBy,
+		SortOrder: sortOrder,
+		Page:      pagina,
+		PageSize:  tamanhoPagina,
+		Q:         c.Query("q"),
+		CreatedAt: c.Query("created_at"),
+	}
+
+	holiday, totalRegs, err := h.usecaseCloudAccount.GetAll(params)
+
+	if exception := handleError(c, err); exception {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"data": cloudAccounts,
-	})
+	paginationResponse := PaginationResponse{
+		TotalPages:     getTotalPaginas(totalRegs, tamanhoPagina),
+		Page:           pagina,
+		TotalRegisters: int(totalRegs),
+		Registers:      holiday,
+	}
+
+	c.JSON(http.StatusOK, paginationResponse)
 }
 
 // @Summary Get cloud account by id
@@ -48,7 +65,7 @@ func (h *CloudAccountHandlers) GetAllCloudAccountHandle(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param id path int true "Cloud Account ID"
 // @Success 200 {object} entity.EntityCloudAccount "success"
-// @Router /api/cloud_account/{id} [get]
+// @Router /api/cloudaccount/{id} [get]
 func (h *CloudAccountHandlers) GetByIDCloudAccountHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
@@ -74,7 +91,7 @@ func (h *CloudAccountHandlers) GetByIDCloudAccountHandle(c *gin.Context) {
 // @Param entity.EntityCloudAccount body entity.EntityCloudAccount true "Cloud Account"
 // @Param Authorization header string true "Bearer Token"
 // @Success 201 {string} string "success"
-// @Router /api/cloud_account/ [post]
+// @Router /api/cloudaccount/ [post]
 func (h *CloudAccountHandlers) CreateCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)
@@ -105,7 +122,7 @@ func (h *CloudAccountHandlers) CreateCloudAccountHandle(c *gin.Context) {
 // @Produce  json
 // @Security ApiKeyAuth
 // @Success 200 {object} entity.EntityCloudAccount "success"
-// @Router /api/cloud_account/ [put]
+// @Router /api/cloudaccount/ [put]
 func (h *CloudAccountHandlers) UpdateCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)
@@ -137,7 +154,7 @@ func (h *CloudAccountHandlers) UpdateCloudAccountHandle(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param id path int true "Cloud Account ID"
 // @Success 200 {string} string "success"
-// @Router /api/cloud_account/{id} [delete]
+// @Router /api/cloudaccount/{id} [delete]
 func (h *CloudAccountHandlers) DeleteCloudAccountHandle(c *gin.Context) {
 	var cloudAccount *entity.EntityCloudAccount
 	err := c.ShouldBindJSON(&cloudAccount)
@@ -170,7 +187,7 @@ func (h *CloudAccountHandlers) DeleteCloudAccountHandle(c *gin.Context) {
 // @Param id path int true "Cloud Account ID"
 // @Param status path bool true "Status"
 // @Success 200 {object} entity.EntityCloudAccount "success"
-// @Router /api/cloud_account/{id}/{status} [get]
+// @Router /api/cloudaccount/{id}/{status} [get]
 func (h *CloudAccountHandlers) ActiveDeactiveCloudAccountHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	status, _ := strconv.ParseBool(c.Param("status"))
@@ -188,15 +205,42 @@ func (h *CloudAccountHandlers) ActiveDeactiveCloudAccountHandle(c *gin.Context) 
 	})
 }
 
+// @Summary Update all instances of cloud account provider
+// @Description Update all instances of cloud account provider
+// @Tags CloudAccount
+// @Accept  json
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "Cloud Account ID"
+// @Success 200 {string} string "success"
+// @Router /api/cloudaccount/update-all-instances/{id} [get]
+func (h *CloudAccountHandlers) UpdateAllInstanceOFCloudAccountProviderHandle(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	_, err := h.usecaseCloudAccount.UpdateAllInstancesOnCloudAccountProviderFromID(id)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"data": "success",
+	})
+}
+
 func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 	handlers := NewCloudAccountHandlers(usecase_cloud_account.NewAWSService(
 		repository.NewCloudAccountPostgres(conn),
 		repository.NewInstancePostgres(conn),
 	))
 
-	group := r.Group("api/cloud_account")
+	group := r.Group("api/cloudaccount")
 	SetAuthMiddleware(conn, group)
 
+	group.PUT("/update-all-instances/:id", handlers.UpdateAllInstanceOFCloudAccountProviderHandle)
 	group.GET("/", handlers.GetAllCloudAccountHandle)
 	group.GET("/:id", handlers.GetByIDCloudAccountHandle)
 	group.POST("/", handlers.CreateCloudAccountHandle)

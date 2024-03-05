@@ -6,14 +6,18 @@ import (
 )
 
 type IRepositoryHoliday interface {
-	GetAll() ([]entity.EntityHoliday, error)
-	GetByDate(date time.Time) (entity.EntityHoliday, error)
-	CreateUpdate(name string, date time.Time) (entity.EntityHoliday, error)
+	GetFromID(id int) (*entity.EntityHoliday, error)
+	GetAll(searchParams entity.SearchEntityHolidayParams) (response []entity.EntityHoliday, totalRegisters int64, err error)
+	Create(*entity.EntityHoliday) error
+	Update(*entity.EntityHoliday) error
+	Delete(id int) error
 }
 
 type IUsecaseHoliday interface {
-	GetAll() ([]entity.EntityHoliday, error)
-	GetByDate(date time.Time) (entity.EntityHoliday, error)
-	CreateUpdate(name string, date time.Time) (entity.EntityHoliday, error)
+	Get(id int) (*entity.EntityHoliday, error)
+	GetAll(searchParams entity.SearchEntityHolidayParams) (response []entity.EntityHoliday, totalRegisters int64, err error)
+	Create(*entity.EntityHoliday) error
+	Update(*entity.EntityHoliday) error
+	Delete(id int) error
 	DateStringToTime(date string) (time.Time, error)
 }

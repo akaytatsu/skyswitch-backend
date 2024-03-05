@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	middleware "app/api/middleware"
-
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -38,23 +36,17 @@ func NewUserHandler(usecaseUser usecase_user.IUsecaseUser) *UserHandlers {
 // @Tags User
 // @Accept  json
 // @Produce  json
-// @Param loginData body handlers.LoginData true "Login data"
+// @Param handlers.LoginData body LoginData true "LoginData"
 // @Success 200 {object} entity.EntityUser "success"
 // @Router /api/login [post]
 func (h UserHandlers) LoginHandler(c *gin.Context) {
 
 	var loginData LoginData
 
-	println("LoginHandler")
-
 	if err := c.ShouldBindJSON(&loginData); err != nil {
 		handleError(c, err)
 		return
 	}
-
-	println("loginData.Email")
-	println(loginData.Email)
-	println(loginData.Password)
 
 	user, err := h.UsecaseUser.LoginUser(loginData.Email, loginData.Password)
 
@@ -97,7 +89,7 @@ func (h UserHandlers) GetMeHandler(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Param entity.EntityUser body entity.EntityUser true "User"
 // @Success 200 {object} entity.EntityUser "success"
-// @Router /api/user/ [post]
+// @Router /api/user/create [post]
 func (h UserHandlers) CreateUserHandler(c *gin.Context) {
 
 	var entityUser entity.EntityUser
@@ -114,7 +106,6 @@ func (h UserHandlers) CreateUserHandler(c *gin.Context) {
 	}
 
 	jsonResponse(c, http.StatusOK, gin.H{"message": "User created successfully"})
-
 }
 
 // @Summary Update user
@@ -217,7 +208,7 @@ func (h UserHandlers) UpdatePasswordHandler(c *gin.Context) {
 // @Param search query string false "Search"
 // @Param active query string false "Active"
 // @Success 200 {object} entity.EntityUser "success"
-// @Router /api/user/list [get]
+// @Router /api/user/ [get]
 func (h UserHandlers) GetUsersHandler(c *gin.Context) {
 
 	var filters entity.EntityUserFilters
@@ -231,7 +222,16 @@ func (h UserHandlers) GetUsersHandler(c *gin.Context) {
 		return
 	}
 
-	jsonResponse(c, http.StatusOK, users)
+	pagina, _ := getPaginationParams(c)
+
+	paginationResponse := PaginationResponse{
+		// TotalPages:     getTotalPaginas(totalRegs, tamanhoPagina),
+		Page: pagina,
+		// TotalRegisters: int(totalRegs),
+		Registers: users,
+	}
+
+	jsonResponse(c, http.StatusOK, paginationResponse)
 }
 
 // @Summary Get user
@@ -267,16 +267,19 @@ func MountUsersHandlers(gin *gin.Engine, conn *gorm.DB) {
 	gin.GET("/", HomeHandler)
 	gin.POST("/api/login", userHandlers.LoginHandler)
 
-	// gin.POST("/login", userHandlers.LoginHandler)
+	gin.POST("/login", userHandlers.LoginHandler)
 
 	// user
 	group := gin.Group("/api/user")
-	group.Use(middleware.AuthenticatedMiddleware(userHandlers.UsecaseUser))
+	SetAuthMiddleware(conn, group)
+
 	group.GET("/me", userHandlers.GetMeHandler)
-	group.POST("/", userHandlers.CreateUserHandler)
+
+	SetAdminMiddleware(conn, group)
+	group.GET("/", userHandlers.GetUsersHandler)
+	group.POST("/create", userHandlers.CreateUserHandler)
 	group.PUT("/:id", userHandlers.UpdateUserHandler)
 	group.DELETE("/:id", userHandlers.DeleteUserHandler)
 	group.PUT("/password/:id", userHandlers.UpdatePasswordHandler)
-	group.GET("/list", userHandlers.GetUsersHandler)
 	group.GET("/:id", userHandlers.GetUserHandler)
 }

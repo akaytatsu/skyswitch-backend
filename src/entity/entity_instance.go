@@ -14,3 +14,12 @@ type EntityInstance struct {
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
+
+type SearchEntityInstanceParams struct {
+	OrderBy   string `json:"order_by"`
+	SortOrder string `json:"sort_order"`
+	Page      int    `json:"page"`
+	PageSize  int    `json:"page_size"`
+	Q         string `json:"q"`
+	CreatedAt string `json:"created_at"`
+}

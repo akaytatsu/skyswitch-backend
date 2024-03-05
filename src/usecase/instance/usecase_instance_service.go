@@ -13,8 +13,8 @@ func NewService(repository IRepositoryInstance) *UseCaseInstance {
 	return &UseCaseInstance{repo: repository}
 }
 
-func (u *UseCaseInstance) GetAll() (instances []*entity.EntityInstance, err error) {
-	return u.repo.GetAll()
+func (u *UseCaseInstance) GetAll(searchParams entity.SearchEntityInstanceParams) (response []entity.EntityInstance, totalRegisters int64, err error) {
+	return u.repo.GetAll(searchParams)
 }
 
 func (u *UseCaseInstance) GetByID(id int64) (instance *entity.EntityInstance, err error) {
