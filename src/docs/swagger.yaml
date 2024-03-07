@@ -1,4 +1,51 @@
 definitions:
+  entity.EntityCalendar:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      friday:
+        type: boolean
+      fridayDate:
+        type: string
+      id:
+        type: integer
+      monday:
+        type: boolean
+      mondayDate:
+        type: string
+      name:
+        type: string
+      saturday:
+        type: boolean
+      saturdayDate:
+        type: string
+      sunday:
+        type: boolean
+      sundayDate:
+        type: string
+      thursday:
+        type: boolean
+      thursdayDate:
+        type: string
+      tuesday:
+        type: boolean
+      tuesdayDate:
+        type: string
+      type_action:
+        type: string
+      updated_at:
+        type: string
+      valid_holiday:
+        type: boolean
+      valid_weekend:
+        type: boolean
+      wednesday:
+        type: boolean
+      wednesdayDate:
+        type: string
+    type: object
   entity.EntityCloudAccount:
     properties:
       access_key_id:
@@ -89,6 +136,106 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/calendar:
+    get:
+      consumes:
+      - application/json
+      description: Get All Calendar
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityCalendar'
+            type: array
+      summary: Get All Calendar
+      tags:
+      - Calendar
+    post:
+      consumes:
+      - application/json
+      description: Create Calendar
+      parameters:
+      - description: Calendar
+        in: body
+        name: calendar
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityCalendar'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCalendar'
+      summary: Create Calendar
+      tags:
+      - Calendar
+    put:
+      consumes:
+      - application/json
+      description: Update Calendar
+      parameters:
+      - description: Calendar
+        in: body
+        name: calendar
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityCalendar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCalendar'
+      summary: Update Calendar
+      tags:
+      - Calendar
+  /api/calendar/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Calendar
+      parameters:
+      - description: Calendar ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCalendar'
+      summary: Delete Calendar
+      tags:
+      - Calendar
+    get:
+      consumes:
+      - application/json
+      description: Get Calendar
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityCalendar'
+      summary: Get Calendar
+      tags:
+      - Calendar
   /api/cloudaccount/:
     get:
       consumes:

@@ -15,6 +15,158 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/calendar": {
+            "get": {
+                "description": "Get All Calendar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Get All Calendar",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityCalendar"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Calendar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Update Calendar",
+                "parameters": [
+                    {
+                        "description": "Calendar",
+                        "name": "calendar",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Calendar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Create Calendar",
+                "parameters": [
+                    {
+                        "description": "Calendar",
+                        "name": "calendar",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/calendar/{id}": {
+            "get": {
+                "description": "Get Calendar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Get Calendar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Calendar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Delete Calendar",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Calendar ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityCalendar"
+                        }
+                    }
+                }
+            }
+        },
         "/api/cloudaccount/": {
             "get": {
                 "security": [
@@ -806,6 +958,77 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entity.EntityCalendar": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "friday": {
+                    "type": "boolean"
+                },
+                "fridayDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "monday": {
+                    "type": "boolean"
+                },
+                "mondayDate": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "saturday": {
+                    "type": "boolean"
+                },
+                "saturdayDate": {
+                    "type": "string"
+                },
+                "sunday": {
+                    "type": "boolean"
+                },
+                "sundayDate": {
+                    "type": "string"
+                },
+                "thursday": {
+                    "type": "boolean"
+                },
+                "thursdayDate": {
+                    "type": "string"
+                },
+                "tuesday": {
+                    "type": "boolean"
+                },
+                "tuesdayDate": {
+                    "type": "string"
+                },
+                "type_action": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "valid_holiday": {
+                    "type": "boolean"
+                },
+                "valid_weekend": {
+                    "type": "boolean"
+                },
+                "wednesday": {
+                    "type": "boolean"
+                },
+                "wednesdayDate": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.EntityCloudAccount": {
             "type": "object",
             "properties": {
