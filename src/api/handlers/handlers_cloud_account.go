@@ -4,6 +4,7 @@ import (
 	"app/entity"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_instance "app/usecase/instance"
 	"net/http"
 	"strconv"
 
@@ -217,14 +218,7 @@ func (h *CloudAccountHandlers) ActiveDeactiveCloudAccountHandle(c *gin.Context) 
 func (h *CloudAccountHandlers) UpdateAllInstanceOFCloudAccountProviderHandle(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	_, err := h.usecaseCloudAccount.UpdateAllInstancesOnCloudAccountProviderFromID(id)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
+	h.usecaseCloudAccount.UpdateAllInstancesOnCloudAccountProviderFromID(id)
 
 	c.JSON(200, gin.H{
 		"data": "success",
@@ -234,7 +228,9 @@ func (h *CloudAccountHandlers) UpdateAllInstanceOFCloudAccountProviderHandle(c *
 func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 	handlers := NewCloudAccountHandlers(usecase_cloud_account.NewAWSService(
 		repository.NewCloudAccountPostgres(conn),
-		repository.NewInstancePostgres(conn),
+		usecase_instance.NewService(
+			repository.NewInstancePostgres(conn),
+		),
 	))
 
 	group := r.Group("api/cloudaccount")

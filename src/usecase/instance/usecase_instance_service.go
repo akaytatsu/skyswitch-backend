@@ -39,6 +39,8 @@ func (u *UseCaseInstance) ActiveDeactiveInstance(id int64, status bool) (instanc
 
 func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance) error {
 
+	println("instance.InstanceID: ", instance.InstanceID)
+
 	if instance.InstanceID != "" {
 		instanceLocal, err := u.repo.GetByInstanceID(instance.InstanceID)
 
