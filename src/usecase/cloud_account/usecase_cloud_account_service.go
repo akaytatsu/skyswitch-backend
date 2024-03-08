@@ -103,7 +103,9 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 		}
 	}
 
-	return make([]*entity.EntityInstance, 0), nil
+	println("finish update all instances on cloud account provider, cloud")
+
+	return instances, nil
 }
 
 // func (u *UseCaseAWSCloudAccount) getAwsClient(aws_access_key string, aws_secret_key string) *session.Session {

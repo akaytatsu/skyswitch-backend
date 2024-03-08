@@ -11,6 +11,7 @@ import (
 	"app/infrastructure/repository"
 	usecase_calendar "app/usecase/calendar"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 
 	"github.com/gin-contrib/cors"
@@ -50,12 +51,17 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 	)
 
+	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(
+		repository.NewHolidayPostgres(conn),
+	)
+
 	var usecaseCalendar usecase_calendar.IUsecaseCalendar = usecase_calendar.NewService(
 		repository.NewCalendarPostgres(conn),
 		cron.Scheduler,
 		usecaseInstance,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecaseCloudAccount,
+		usecaseHoliday,
 	)
 
 	handlers.MountCloudAccountHandlers(r, conn)

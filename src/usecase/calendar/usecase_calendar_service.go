@@ -4,6 +4,7 @@ import (
 	"app/entity"
 	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	"log"
 	"strconv"
@@ -18,18 +19,21 @@ type UsecaseCalendar struct {
 	usecaseInstance      usecase_instance.IUseCaseInstance
 	infraCloudProvider   infrastructure_cloud_provider.ICloudProvider
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount
+	usecaseHoliday       usecase_holiday.IUsecaseHoliday
 }
 
 func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 	usecaseInstance usecase_instance.IUseCaseInstance,
 	infraCloudProvider infrastructure_cloud_provider.ICloudProvider,
-	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount) *UsecaseCalendar {
+	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount,
+	usecaseHoliday usecase_holiday.IUsecaseHoliday) *UsecaseCalendar {
 	return &UsecaseCalendar{
 		repo:                 repository,
 		scheduler:            scheduler,
 		usecaseInstance:      usecaseInstance,
 		infraCloudProvider:   infraCloudProvider,
 		usecaseCloudAccoount: usecaseCloudAccoount,
+		usecaseHoliday:       usecaseHoliday,
 	}
 }
 
@@ -95,24 +99,24 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 		}
 		if instance.Active {
 
-			// cloudInstance, err := u.infraCloudProvider.GetInstanceByID(instance.InstanceID)
-
-			// if err != nil {
-			// 	log.Println("Error on get instance by id: ", err)
-			// 	continue
-			// }
-
 			if !calendar.Active {
 				continue
 			}
 
+			if check, _ := u.usecaseHoliday.IsHoliday(time.Now()); check {
+				if !calendar.ValidHoliday {
+					continue
+				}
+			}
+
 			if calendar.TypeAction == "on" {
-				println("start: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
+				// println("start: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
+
 				u.infraCloudProvider.StartInstance(instance.InstanceID)
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "running")
 			} else if calendar.TypeAction == "off" {
-				println("stop: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
+				// println("stop: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
 				u.infraCloudProvider.StopInstance(instance.InstanceID)
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "stopped")
@@ -158,6 +162,8 @@ func (u *UsecaseCalendar) scheduleUpdateInstance(cloudAccount entity.EntityCloud
 		}
 		time.Sleep(30 * time.Second)
 	}
+
+	println("update instance: ", instance.InstanceID, " - ", "counter: ", counter)
 }
 
 func (u *UsecaseCalendar) configureSchedules(calendar *entity.EntityCalendar) {

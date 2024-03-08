@@ -88,3 +88,13 @@ func (r *RepositoryHoliday) Delete(id int) (err error) {
 
 	return
 }
+
+func (r *RepositoryHoliday) CheckDateExists(date time.Time) (bool, error) {
+	var count int64
+
+	var dateFormated = date.Format("2006-01-02")
+
+	err := r.DB.Model(&entity.EntityHoliday{}).Where("date = ?", dateFormated).Count(&count).Error
+
+	return count > 0, err
+}

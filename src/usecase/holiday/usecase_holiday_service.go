@@ -36,3 +36,7 @@ func (u *UsecaseHoliday) Delete(id int) error {
 func (u *UsecaseHoliday) DateStringToTime(date string) (time.Time, error) {
 	return time.Parse("2006-01-02", date)
 }
+
+func (u *UsecaseHoliday) IsHoliday(date time.Time) (bool, error) {
+	return u.repo.CheckDateExists(date)
+}
