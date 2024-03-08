@@ -11,8 +11,12 @@ import (
 	"github.com/go-co-op/gocron"
 )
 
+var Scheduler *gocron.Scheduler
+
 func StartCronJobs() {
 	s := gocron.NewScheduler(time.UTC)
+
+	Scheduler = s
 
 	// updateInstances()
 

@@ -29,11 +29,27 @@ func (u *UseCaseAWSCloudAccount) GetByID(id int64) (cloudAccount *entity.EntityC
 }
 
 func (u *UseCaseAWSCloudAccount) CreateCloudAccount(cloudAccount *entity.EntityCloudAccount) error {
-	return u.repo.CreateCloudAccount(cloudAccount)
+	err := u.repo.CreateCloudAccount(cloudAccount)
+
+	if err != nil {
+		return err
+	}
+
+	go u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+
+	return nil
 }
 
 func (u *UseCaseAWSCloudAccount) UpdateCloudAccount(cloudAccount *entity.EntityCloudAccount) error {
-	return u.repo.UpdateCloudAccount(cloudAccount)
+	err := u.repo.UpdateCloudAccount(cloudAccount)
+
+	if err != nil {
+		return err
+	}
+
+	go u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+
+	return nil
 }
 
 func (u *UseCaseAWSCloudAccount) DeleteCloudAccount(cloudAccount *entity.EntityCloudAccount) error {

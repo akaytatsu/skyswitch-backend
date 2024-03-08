@@ -5,6 +5,7 @@ import (
 
 	"app/api/handlers"
 	"app/config"
+	"app/cron"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_calendar "app/usecase/calendar"
@@ -38,6 +39,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 
 	var usecaseCalendar usecase_calendar.IUsecaseCalendar = usecase_calendar.NewService(
 		repository.NewCalendarPostgres(conn),
+		cron.Scheduler,
 	)
 
 	handlers.MountCloudAccountHandlers(r, conn)
