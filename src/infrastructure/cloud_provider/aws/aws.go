@@ -3,6 +3,7 @@ package infrastructure_cloud_provider_aws
 import (
 	"app/entity"
 	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -110,6 +111,7 @@ func (a *AWSCloudProvider) StopInstance(instanceID string) (err error) {
 
 	_, err = svc.StopInstances(input)
 	if err != nil {
+		log.Println("Error on stop instance: ", err.Error())
 		return err
 	}
 

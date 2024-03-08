@@ -7,6 +7,7 @@ import (
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_instance "app/usecase/instance"
+	"os"
 	"time"
 
 	"github.com/go-co-op/gocron"
@@ -15,7 +16,16 @@ import (
 var Scheduler *gocron.Scheduler
 
 func StartCronJobs() {
-	s := gocron.NewScheduler(time.UTC)
+	var timezoneParam string = os.Getenv("TIME_ZONE")
+	var timezone *time.Location
+
+	if timezoneParam == "" {
+		timezone = time.UTC
+	} else {
+		timezone, _ = time.LoadLocation(timezoneParam)
+	}
+
+	s := gocron.NewScheduler(timezone)
 
 	Scheduler = s
 
