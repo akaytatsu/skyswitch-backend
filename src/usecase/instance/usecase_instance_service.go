@@ -39,8 +39,6 @@ func (u *UseCaseInstance) ActiveDeactiveInstance(id int64, status bool) (instanc
 
 func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance, updateCalendars bool) error {
 
-	println("instance.InstanceID: ", instance.InstanceID)
-
 	if instance.InstanceID != "" {
 		instanceLocal, err := u.repo.GetByInstanceID(instance.InstanceID)
 
@@ -55,4 +53,8 @@ func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance
 	}
 
 	return u.repo.CreateInstance(instance)
+}
+
+func (u *UseCaseInstance) GetAllOFCalendar(calendarID int) (response []entity.EntityInstance, err error) {
+	return u.repo.FromCalendar(calendarID)
 }

@@ -2,6 +2,7 @@ package cron
 
 import (
 	"app/entity"
+	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
@@ -30,7 +31,11 @@ func updateInstances() {
 	var repoInstances usecase_instance.IRepositoryInstance = repository.NewInstancePostgres(db)
 
 	var ucIntances usecase_instance.IUseCaseInstance = usecase_instance.NewService(repoInstances)
-	var ucCloudProvider usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(repoCloudProvider, ucIntances)
+	var ucCloudProvider usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
+		repoCloudProvider,
+		ucIntances,
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+	)
 
 	cloudAccounts, _, _ := ucCloudProvider.GetAll(entity.SearchEntityCloudAccountParams{
 		Page:     0,

@@ -122,3 +122,14 @@ func (u *RepositoryInstance) ActiveDeactiveInstance(id int64, status bool) (inst
 func (u *RepositoryInstance) CreateOrUpdateInstance(instance *entity.EntityInstance) error {
 	return u.DB.Save(&instance).Error
 }
+
+func (u *RepositoryInstance) FromCalendar(calendarID int) (response []entity.EntityInstance, err error) {
+
+	err = u.DB.Debug().Model(&entity.EntityInstance{}).Preload("CloudAccount").
+		Joins("JOIN entity_instance_calendars ON entity_instance_calendars.entity_instance_id = entity_instances.id").
+		Joins("JOIN entity_cloud_accounts ON entity_cloud_accounts.id = entity_instances.cloud_account_id").
+		Where("entity_instance_calendars.entity_calendar_id = ?", calendarID).
+		Find(&response).Error
+
+	return response, err
+}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
@@ -33,6 +34,7 @@ func HomeHandler(c *gin.Context) {
 	var usecaseCloudAccount usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
 		repository.NewCloudAccountPostgres(conn),
 		usecase_instance.NewService(repository.NewInstancePostgres(conn)),
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 	)
 
 	usecaseCloudAccount.UpdateAllInstancesOnAllCloudAccountProvider()

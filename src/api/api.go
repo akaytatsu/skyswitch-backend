@@ -6,9 +6,11 @@ import (
 	"app/api/handlers"
 	"app/config"
 	"app/cron"
+	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_calendar "app/usecase/calendar"
+	usecase_instance "app/usecase/instance"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -37,9 +39,15 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
+		repository.NewInstancePostgres(conn),
+	)
+
 	var usecaseCalendar usecase_calendar.IUsecaseCalendar = usecase_calendar.NewService(
 		repository.NewCalendarPostgres(conn),
 		cron.Scheduler,
+		usecaseInstance,
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 	)
 
 	handlers.MountCloudAccountHandlers(r, conn)

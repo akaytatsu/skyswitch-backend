@@ -10,6 +10,7 @@ type EntityCloudAccount struct {
 	Nickname        string `gorm:"column:nickname" json:"nickname"`
 	AccessKeyID     string `gorm:"column:access_key_id" json:"access_key_id"`
 	SecretAccessKey string `gorm:"column:secret_access_key" json:"secret_access_key"`
+	Region          string `gorm:"varchar(20);column:region" json:"region"`
 	Active          bool   `gorm:"column:active;default:true" json:"active"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time

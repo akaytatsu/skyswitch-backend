@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"app/entity"
+	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_instance "app/usecase/instance"
@@ -231,6 +232,7 @@ func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 		usecase_instance.NewService(
 			repository.NewInstancePostgres(conn),
 		),
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 	))
 
 	group := r.Group("api/cloudaccount")

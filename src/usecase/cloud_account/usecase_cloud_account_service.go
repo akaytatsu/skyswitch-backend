@@ -2,22 +2,20 @@ package usecase_cloud_account
 
 import (
 	"app/entity"
+	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
 	usecase_instance "app/usecase/instance"
 	"log"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
 type UseCaseAWSCloudAccount struct {
-	repo             IRepositoryCloudAccount
-	useCaseInstances usecase_instance.IUseCaseInstance
+	repo               IRepositoryCloudAccount
+	useCaseInstances   usecase_instance.IUseCaseInstance
+	infraCloudProvider infrastructure_cloud_provider.ICloudProvider
 }
 
-func NewAWSService(repository IRepositoryCloudAccount, usecaseInstances usecase_instance.IUseCaseInstance) *UseCaseAWSCloudAccount {
-	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances}
+func NewAWSService(repository IRepositoryCloudAccount, usecaseInstances usecase_instance.IUseCaseInstance,
+	infraCloudProvider infrastructure_cloud_provider.ICloudProvider) *UseCaseAWSCloudAccount {
+	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances, infraCloudProvider: infraCloudProvider}
 }
 
 func (u *UseCaseAWSCloudAccount) GetAll(searchParams entity.SearchEntityCloudAccountParams) (response []entity.EntityCloudAccount, totalRegisters int64, err error) {
@@ -84,12 +82,13 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnAllCloudAccountProvider() (
 
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error) {
 
-	aws_access_key := cloudAccount.AccessKeyID
-	aws_secret_key := cloudAccount.SecretAccessKey
+	err = u.infraCloudProvider.Connect(*cloudAccount)
 
-	client := u.getAwsClient(aws_access_key, aws_secret_key)
+	if err != nil {
+		return nil, err
+	}
 
-	instances, err = u.getAwsEC2AllInstances(cloudAccount, client)
+	instances, err = u.infraCloudProvider.GetInstances()
 
 	if err != nil {
 		return instances, err
@@ -107,55 +106,93 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 	return make([]*entity.EntityInstance, 0), nil
 }
 
-func (u *UseCaseAWSCloudAccount) getAwsClient(aws_access_key string, aws_secret_key string) *session.Session {
+// func (u *UseCaseAWSCloudAccount) getAwsClient(aws_access_key string, aws_secret_key string) *session.Session {
 
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-1"),                                              // Substitua pela sua região desejada
-		Credentials: credentials.NewStaticCredentials(aws_access_key, aws_secret_key, ""), // Substitua com suas chaves de acesso e segredo
-	}))
+// 	sess := session.Must(session.NewSession(&aws.Config{
+// 		Region:      aws.String("us-east-1"),                                              // Substitua pela sua região desejada
+// 		Credentials: credentials.NewStaticCredentials(aws_access_key, aws_secret_key, ""), // Substitua com suas chaves de acesso e segredo
+// 	}))
 
-	return sess
+// 	return sess
 
-}
+// }
 
-func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(cloudAccount *entity.EntityCloudAccount, sess *session.Session) (instances []*entity.EntityInstance, err error) {
+// func (u *UseCaseAWSCloudAccount) startStopInstance(cloudAccount *entity.EntityCloudAccount, instanceID string, action string) error {
 
-	instances = make([]*entity.EntityInstance, 0)
+// 	aws_access_key := cloudAccount.AccessKeyID
+// 	aws_secret_key := cloudAccount.SecretAccessKey
 
-	// Create new EC2 client
-	svc := ec2.New(sess)
+// 	client := u.getAwsClient(aws_access_key, aws_secret_key)
 
-	// Call to get detailed information on each instance
-	result, err := svc.DescribeInstances(nil)
-	if err != nil {
-		return instances, err
-	}
+// 	svc := ec2.New(client)
 
-	for _, reservations := range result.Reservations {
-		for _, instance := range reservations.Instances {
+// 	if action == "off" {
+// 		input := &ec2.StopInstancesInput{
+// 			InstanceIds: []*string{
+// 				aws.String(instanceID),
+// 			},
+// 		}
 
-			var name string
+// 		_, err := svc.StopInstances(input)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	} else if action == "on" {
+// 		input := &ec2.StartInstancesInput{
+// 			InstanceIds: []*string{
+// 				aws.String(instanceID),
+// 			},
+// 		}
 
-			for _, tag := range instance.Tags {
-				if *tag.Key == "Name" {
-					name = *tag.Value
-				}
-			}
+// 		_, err := svc.StartInstances(input)
+// 		if err != nil {
+// 			return err
+// 		}
+// 	} else {
+// 		return errors.New("invalid action")
+// 	}
 
-			instances = append(instances, &entity.EntityInstance{
-				CloudAccountID: cloudAccount.ID,
-				InstanceID:     *instance.InstanceId,
-				InstanceType:   *instance.InstanceType,
-				InstanceName:   name,
-				InstanceRegion: *instance.Placement.AvailabilityZone,
-				InstanceState:  *instance.State.Name,
-				Active:         true,
-			})
-		}
-	}
+// 	return nil
+// }
 
-	return instances, nil
-}
+// func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(cloudAccount *entity.EntityCloudAccount, sess *session.Session) (instances []*entity.EntityInstance, err error) {
+
+// 	instances = make([]*entity.EntityInstance, 0)
+
+// 	// Create new EC2 client
+// 	svc := ec2.New(sess)
+
+// 	// Call to get detailed information on each instance
+// 	result, err := svc.DescribeInstances(nil)
+// 	if err != nil {
+// 		return instances, err
+// 	}
+
+// 	for _, reservations := range result.Reservations {
+// 		for _, instance := range reservations.Instances {
+
+// 			var name string
+
+// 			for _, tag := range instance.Tags {
+// 				if *tag.Key == "Name" {
+// 					name = *tag.Value
+// 				}
+// 			}
+
+// 			instances = append(instances, &entity.EntityInstance{
+// 				CloudAccountID: cloudAccount.ID,
+// 				InstanceID:     *instance.InstanceId,
+// 				InstanceType:   *instance.InstanceType,
+// 				InstanceName:   name,
+// 				InstanceRegion: *instance.Placement.AvailabilityZone,
+// 				InstanceState:  *instance.State.Name,
+// 				Active:         true,
+// 			})
+// 		}
+// 	}
+
+// 	return instances, nil
+// }
 
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProviderFromID(id int) (instances []*entity.EntityInstance, err error) {
 	cloudAccount, err := u.GetByID(int64(id))

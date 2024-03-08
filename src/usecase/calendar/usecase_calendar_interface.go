@@ -16,4 +16,5 @@ type IUsecaseCalendar interface {
 	Create(*entity.EntityCalendar) error
 	Update(*entity.EntityCalendar) error
 	Delete(id int) error
+	ProccessCalendar(*entity.EntityCalendar) error
 }
