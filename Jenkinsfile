@@ -15,20 +15,6 @@ def cancelPreviousBuilds() {
   }
 }
 
-def bitbucketNotify(status, branch_name, git_commit) {
-    withCredentials([usernamePassword(credentialsId: 'thiagofreitas', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-        sh "curl --location --request POST 'https://api.bitbucket.org/2.0/repositories/sistema_vert/vert-fileexplorer/commit/"+git_commit+"/statuses/build'" \
-            + " --user $USERNAME:$PASSWORD " \
-            + " --header 'Content-Type: application/json' " \
-            + " --data '{" \
-            + "    \"state\": \""+status+"\"," \
-            + "    \"key\": \""+git_commit+"\"," \
-            + "    \"name\": \"Jenkins: "+branch_name+"\"," \
-            + "    \"url\": \"https://ci.vert-capital.com/blue/organizations/jenkins/skyswitch-back/activity\"" \
-            + "}'"
-    }
-}
-
 pipeline {
 
     environment {
@@ -129,34 +115,30 @@ pipeline {
         }
 
         success {
-            echo "Notify bitbucket success"
+            echo "Notify success"
             script {
                 sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
-                // bitbucketNotify('SUCCESSFUL', env.BRANCH_NAME, env.GIT_COMMIT)
             }
         }
 
         failure {
-            echo "Notify bitbucket failure"
+            echo "Notify failure"
             script {
                 sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
-                // bitbucketNotify('FAILED', env.BRANCH_NAME, env.GIT_COMMIT)
             }
         }
 
         aborted {
-            echo "Notify bitbucket failure"
+            echo "Notify failure"
             script {
                 sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
-                // bitbucketNotify('FAILED', env.BRANCH_NAME, env.GIT_COMMIT)
             }
         }
 
         unsuccessful {
-            echo "Notify bitbucket failure"
+            echo "Notify failure"
             script {
                 sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
-                // bitbucketNotify('FAILED', env.BRANCH_NAME, env.GIT_COMMIT)
             }
         }
 
