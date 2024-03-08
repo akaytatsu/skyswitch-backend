@@ -33,13 +33,26 @@ func (h *IntancesHandlers) GetAllInstancesHandler(c *gin.Context) {
 	orderBy, sortOrder := getOrderByParams(c, "updated_at")
 	pagina, tamanhoPagina := getPaginationParams(c)
 
+	OnlyStatusMonitor := c.Query("only_status_monitor")
+
+	if OnlyStatusMonitor == "" {
+		OnlyStatusMonitor = "true"
+	}
+
+	OnlyActive := c.Query("only_active")
+	if OnlyActive == "" {
+		OnlyActive = "true"
+	}
+
 	params := entity.SearchEntityInstanceParams{
-		OrderBy:   orderBy,
-		SortOrder: sortOrder,
-		Page:      pagina,
-		PageSize:  tamanhoPagina,
-		Q:         c.Query("q"),
-		CreatedAt: c.Query("created_at"),
+		OrderBy:           orderBy,
+		SortOrder:         sortOrder,
+		Page:              pagina,
+		PageSize:          tamanhoPagina,
+		Q:                 c.Query("q"),
+		CreatedAt:         c.Query("created_at"),
+		OnlyStatusMonitor: OnlyStatusMonitor == "true",
+		OnlyActive:        OnlyActive == "true",
 	}
 
 	instances, totalRegs, err := h.usecaseInstances.GetAll(params)

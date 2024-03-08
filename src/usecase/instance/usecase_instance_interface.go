@@ -22,4 +22,5 @@ type IUseCaseInstance interface {
 	CreateOrUpdateInstance(instance *entity.EntityInstance, updateCalendars bool) error
 	DeleteInstance(instance *entity.EntityInstance) error
 	ActiveDeactiveInstance(id int64, status bool) (instance *entity.EntityInstance, err error)
+	GetByInstanceID(instanceID string) (instance *entity.EntityInstance, err error)
 }

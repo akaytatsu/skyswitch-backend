@@ -37,6 +37,14 @@ func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstancePara
 		}
 	}
 
+	if searchParams.OnlyStatusMonitor {
+		qry = qry.Where("instance_state in (?)", []string{"running", "stopped"})
+	}
+
+	if searchParams.OnlyActive {
+		qry = qry.Where("active = ?", true)
+	}
+
 	err = qry.Count(&totalRegisters).Error
 
 	if err != nil {
@@ -120,7 +128,14 @@ func (u *RepositoryInstance) ActiveDeactiveInstance(id int64, status bool) (inst
 }
 
 func (u *RepositoryInstance) CreateOrUpdateInstance(instance *entity.EntityInstance) error {
-	return u.DB.Save(&instance).Error
+
+	exists, err := u.GetByID(instance.ID)
+
+	if err != nil {
+		return u.CreateInstance(instance)
+	}
+
+	return u.UpdateInstance(exists, false)
 }
 
 func (u *RepositoryInstance) FromCalendar(calendarID int) (response []entity.EntityInstance, err error) {

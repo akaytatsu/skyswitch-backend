@@ -96,6 +96,12 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 
 	for _, instance := range instances {
 
+		aux, _ := u.useCaseInstances.GetByInstanceID(instance.InstanceID)
+
+		instance.Active = aux.Active
+
+		println(aux.Active, " - ", instance.Active, " - ", aux.ID, " - ", instance.ID)
+
 		err = u.useCaseInstances.CreateOrUpdateInstance(instance, false)
 
 		if err != nil {
@@ -107,94 +113,6 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 
 	return instances, nil
 }
-
-// func (u *UseCaseAWSCloudAccount) getAwsClient(aws_access_key string, aws_secret_key string) *session.Session {
-
-// 	sess := session.Must(session.NewSession(&aws.Config{
-// 		Region:      aws.String("us-east-1"),                                              // Substitua pela sua região desejada
-// 		Credentials: credentials.NewStaticCredentials(aws_access_key, aws_secret_key, ""), // Substitua com suas chaves de acesso e segredo
-// 	}))
-
-// 	return sess
-
-// }
-
-// func (u *UseCaseAWSCloudAccount) startStopInstance(cloudAccount *entity.EntityCloudAccount, instanceID string, action string) error {
-
-// 	aws_access_key := cloudAccount.AccessKeyID
-// 	aws_secret_key := cloudAccount.SecretAccessKey
-
-// 	client := u.getAwsClient(aws_access_key, aws_secret_key)
-
-// 	svc := ec2.New(client)
-
-// 	if action == "off" {
-// 		input := &ec2.StopInstancesInput{
-// 			InstanceIds: []*string{
-// 				aws.String(instanceID),
-// 			},
-// 		}
-
-// 		_, err := svc.StopInstances(input)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	} else if action == "on" {
-// 		input := &ec2.StartInstancesInput{
-// 			InstanceIds: []*string{
-// 				aws.String(instanceID),
-// 			},
-// 		}
-
-// 		_, err := svc.StartInstances(input)
-// 		if err != nil {
-// 			return err
-// 		}
-// 	} else {
-// 		return errors.New("invalid action")
-// 	}
-
-// 	return nil
-// }
-
-// func (u *UseCaseAWSCloudAccount) getAwsEC2AllInstances(cloudAccount *entity.EntityCloudAccount, sess *session.Session) (instances []*entity.EntityInstance, err error) {
-
-// 	instances = make([]*entity.EntityInstance, 0)
-
-// 	// Create new EC2 client
-// 	svc := ec2.New(sess)
-
-// 	// Call to get detailed information on each instance
-// 	result, err := svc.DescribeInstances(nil)
-// 	if err != nil {
-// 		return instances, err
-// 	}
-
-// 	for _, reservations := range result.Reservations {
-// 		for _, instance := range reservations.Instances {
-
-// 			var name string
-
-// 			for _, tag := range instance.Tags {
-// 				if *tag.Key == "Name" {
-// 					name = *tag.Value
-// 				}
-// 			}
-
-// 			instances = append(instances, &entity.EntityInstance{
-// 				CloudAccountID: cloudAccount.ID,
-// 				InstanceID:     *instance.InstanceId,
-// 				InstanceType:   *instance.InstanceType,
-// 				InstanceName:   name,
-// 				InstanceRegion: *instance.Placement.AvailabilityZone,
-// 				InstanceState:  *instance.State.Name,
-// 				Active:         true,
-// 			})
-// 		}
-// 	}
-
-// 	return instances, nil
-// }
 
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProviderFromID(id int) (instances []*entity.EntityInstance, err error) {
 	cloudAccount, err := u.GetByID(int64(id))

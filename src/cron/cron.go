@@ -29,7 +29,7 @@ func StartCronJobs() {
 
 	Scheduler = s
 
-	// updateInstances()
+	s.Every(30).Minutes().Do(updateInstances)
 
 	s.StartAsync()
 }

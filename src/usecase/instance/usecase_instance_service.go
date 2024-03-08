@@ -58,3 +58,7 @@ func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance
 func (u *UseCaseInstance) GetAllOFCalendar(calendarID int) (response []entity.EntityInstance, err error) {
 	return u.repo.FromCalendar(calendarID)
 }
+
+func (u *UseCaseInstance) GetByInstanceID(instanceID string) (instance *entity.EntityInstance, err error) {
+	return u.repo.GetByInstanceID(instanceID)
+}

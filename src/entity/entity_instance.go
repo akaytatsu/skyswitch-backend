@@ -18,10 +18,12 @@ type EntityInstance struct {
 }
 
 type SearchEntityInstanceParams struct {
-	OrderBy   string `json:"order_by"`
-	SortOrder string `json:"sort_order"`
-	Page      int    `json:"page"`
-	PageSize  int    `json:"page_size"`
-	Q         string `json:"q"`
-	CreatedAt string `json:"created_at"`
+	OrderBy           string `json:"order_by"`
+	SortOrder         string `json:"sort_order"`
+	Page              int    `json:"page"`
+	PageSize          int    `json:"page_size"`
+	Q                 string `json:"q"`
+	CreatedAt         string `json:"created_at"`
+	OnlyStatusMonitor bool   `json:"only_status_monitor"`
+	OnlyActive        bool   `json:"only_active"`
 }
