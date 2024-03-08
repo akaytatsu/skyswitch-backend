@@ -47,9 +47,9 @@ pipeline {
             steps {
                 script {
                     sh 'cp -f src/.env.sample src/.env'
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml build'
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml up -d --no-build'
+                    sh 'docker-compose -f docker-compose.yml down'
+                    sh 'docker-compose -f docker-compose.yml build'
+                    sh 'docker-compose -f docker-compose.yml up -d --no-build'
                 }
             }
         }
@@ -57,7 +57,7 @@ pipeline {
         stage('stop containers') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                    sh 'docker-compose -f docker-compose.yml down'
                 }
             }
         }
@@ -110,35 +110,35 @@ pipeline {
         always {
             echo "Stop Docker image"
             script{
-                sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
 
         success {
             echo "Notify success"
             script {
-                sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
 
         failure {
             echo "Notify failure"
             script {
-                sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
 
         aborted {
             echo "Notify failure"
             script {
-                sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
 
         unsuccessful {
             echo "Notify failure"
             script {
-                sh 'docker-compose -f docker-compose.yml -f docker-compose.tests.yml down'
+                sh 'docker-compose -f docker-compose.yml down'
             }
         }
 
