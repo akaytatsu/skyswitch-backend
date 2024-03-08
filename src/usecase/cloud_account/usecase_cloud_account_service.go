@@ -81,7 +81,7 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 
 	for _, instance := range instances {
 
-		err = u.useCaseInstances.CreateOrUpdateInstance(instance)
+		err = u.useCaseInstances.CreateOrUpdateInstance(instance, false)
 
 		if err != nil {
 			log.Println("Error creating or updating instance: ", err)

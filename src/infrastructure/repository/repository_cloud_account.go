@@ -43,6 +43,14 @@ func (u *RepositoryCloudAccount) GetAll(searchParams entity.SearchEntityCloudAcc
 		return nil, 0, err
 	}
 
+	if searchParams.OrderBy == "" {
+		searchParams.OrderBy = "id"
+	}
+
+	if searchParams.SortOrder == "" {
+		searchParams.SortOrder = "asc"
+	}
+
 	qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
 		Offset(offset).
 		Limit(searchParams.PageSize)

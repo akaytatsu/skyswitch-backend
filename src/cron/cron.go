@@ -14,7 +14,7 @@ import (
 func StartCronJobs() {
 	s := gocron.NewScheduler(time.UTC)
 
-	updateInstances()
+	// updateInstances()
 
 	s.StartAsync()
 }

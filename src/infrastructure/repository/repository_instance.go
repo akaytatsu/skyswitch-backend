@@ -20,7 +20,7 @@ func NewInstancePostgres(DB *gorm.DB) *RepositoryInstance {
 func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstanceParams) (response []entity.EntityInstance, totalRegisters int64, err error) {
 	offset := (searchParams.Page) * searchParams.PageSize
 
-	qry := u.DB.Model(entity.EntityInstance{})
+	qry := u.DB.Model(entity.EntityInstance{}).Preload("Calendars").Preload("CloudAccount")
 
 	if gin.IsDebugging() {
 		qry = qry.Debug()
@@ -43,6 +43,14 @@ func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstancePara
 		return nil, 0, err
 	}
 
+	// if searchParams.OrderBy == "" {
+	searchParams.OrderBy = "id"
+	// }
+
+	// if searchParams.SortOrder == "" {
+	searchParams.SortOrder = "asc"
+	// }
+
 	qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
 		Offset(offset).
 		Limit(searchParams.PageSize)
@@ -56,13 +64,13 @@ func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstancePara
 }
 
 func (u *RepositoryInstance) GetByID(id int64) (instance *entity.EntityInstance, err error) {
-	err = u.DB.Where("id = ?", id).First(&instance).Error
+	err = u.DB.Where("id = ?", id).First(&instance).Preload("Calendars").Preload("CloudAccount").Error
 
 	return instance, err
 }
 
 func (u *RepositoryInstance) GetByInstanceID(instanceID string) (instance *entity.EntityInstance, err error) {
-	err = u.DB.Where("instance_id = ?", instanceID).First(&instance).Error
+	err = u.DB.Where("instance_id = ?", instanceID).First(&instance).Preload("Calendars").Preload("CloudAccount").Error
 
 	return instance, err
 }
@@ -71,12 +79,19 @@ func (u *RepositoryInstance) CreateInstance(instance *entity.EntityInstance) err
 	return u.DB.Create(&instance).Error
 }
 
-func (u *RepositoryInstance) UpdateInstance(instance *entity.EntityInstance) error {
+func (u *RepositoryInstance) UpdateInstance(instance *entity.EntityInstance, updateCalendars bool) error {
 
 	_, err := u.GetByID(instance.ID)
 
 	if err != nil {
 		return err
+	}
+
+	if updateCalendars {
+		// limpa o relacionamento de calendários que não estão mais associados
+		calendarsAux := instance.Calendars
+		u.DB.Model(&instance).Association("Calendars").Clear()
+		instance.Calendars = calendarsAux
 	}
 
 	return u.DB.Save(&instance).Error

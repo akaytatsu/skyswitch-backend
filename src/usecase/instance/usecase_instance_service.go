@@ -25,8 +25,8 @@ func (u *UseCaseInstance) CreateInstance(instance *entity.EntityInstance) error 
 	return u.repo.CreateInstance(instance)
 }
 
-func (u *UseCaseInstance) UpdateInstance(instance *entity.EntityInstance) error {
-	return u.repo.UpdateInstance(instance)
+func (u *UseCaseInstance) UpdateInstance(instance *entity.EntityInstance, updateCalendars bool) error {
+	return u.repo.UpdateInstance(instance, updateCalendars)
 }
 
 func (u *UseCaseInstance) DeleteInstance(instance *entity.EntityInstance) error {
@@ -37,7 +37,7 @@ func (u *UseCaseInstance) ActiveDeactiveInstance(id int64, status bool) (instanc
 	return u.repo.ActiveDeactiveInstance(id, status)
 }
 
-func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance) error {
+func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance, updateCalendars bool) error {
 
 	println("instance.InstanceID: ", instance.InstanceID)
 
@@ -51,7 +51,7 @@ func (u *UseCaseInstance) CreateOrUpdateInstance(instance *entity.EntityInstance
 
 		instance.ID = instanceLocal.ID
 
-		return u.repo.UpdateInstance(instance)
+		return u.repo.UpdateInstance(instance, updateCalendars)
 	}
 
 	return u.repo.CreateInstance(instance)

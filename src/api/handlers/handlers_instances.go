@@ -77,6 +77,34 @@ func (h *IntancesHandlers) GetByIDInstanceHandler(c *gin.Context) {
 	jsonResponse(c, http.StatusOK, instance)
 }
 
+// @Summary Update instance
+// @Description Update instance
+// @Tags Instances
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Instance ID"
+// @Param entity.EntityInstance body entity.EntityInstance true "Instance"
+// @Param Authorization header string true "
+// @Security ApiKeyAuth
+// @Success 200 {object} entity.EntityInstance "success"
+// @Router /api/instances/{id} [put]
+func (h *IntancesHandlers) UpdateInstanceHandler(c *gin.Context) {
+	var instance entity.EntityInstance
+
+	if err := c.ShouldBindJSON(&instance); err != nil {
+		handleError(c, err)
+		return
+	}
+
+	err := h.usecaseInstances.UpdateInstance(&instance, true)
+
+	if exception := handleError(c, err); exception {
+		return
+	}
+
+	c.JSON(http.StatusOK, instance)
+}
+
 func MountInstancesRoutes(r *gin.Engine, conn *gorm.DB) {
 	instanceHandlers := NewIntancesHandlers(usecase_instance.NewService(
 		repository.NewInstancePostgres(conn),
@@ -87,4 +115,5 @@ func MountInstancesRoutes(r *gin.Engine, conn *gorm.DB) {
 
 	group.GET("/", instanceHandlers.GetAllInstancesHandler)
 	group.GET("/:id", instanceHandlers.GetByIDInstanceHandler)
+	group.PUT("/:id", instanceHandlers.UpdateInstanceHandler)
 }
