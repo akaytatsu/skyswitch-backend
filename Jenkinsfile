@@ -48,9 +48,6 @@ pipeline {
         stage('Init') {
             steps {
                 cancelPreviousBuilds()
-                script {
-                    // bitbucketNotify('INPROGRESS', env.BRANCH_NAME, env.GIT_COMMIT)
-                }
             }
         }
 
