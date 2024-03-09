@@ -45,6 +45,10 @@ func (u *RepositoryInstance) GetAll(searchParams entity.SearchEntityInstancePara
 		qry = qry.Where("active = ?", true)
 	}
 
+	if searchParams.ExcludeBlankName {
+		qry = qry.Where("instance_name <> ''")
+	}
+
 	err = qry.Count(&totalRegisters).Error
 
 	if err != nil {

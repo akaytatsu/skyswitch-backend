@@ -44,6 +44,11 @@ func (h *IntancesHandlers) GetAllInstancesHandler(c *gin.Context) {
 		OnlyActive = "true"
 	}
 
+	ExcludeBlankName := c.Query("exclude_blank_name")
+	if ExcludeBlankName == "" {
+		ExcludeBlankName = "true"
+	}
+
 	params := entity.SearchEntityInstanceParams{
 		OrderBy:           orderBy,
 		SortOrder:         sortOrder,
@@ -53,6 +58,7 @@ func (h *IntancesHandlers) GetAllInstancesHandler(c *gin.Context) {
 		CreatedAt:         c.Query("created_at"),
 		OnlyStatusMonitor: OnlyStatusMonitor == "true",
 		OnlyActive:        OnlyActive == "true",
+		ExcludeBlankName:  ExcludeBlankName == "true",
 	}
 
 	instances, totalRegs, err := h.usecaseInstances.GetAll(params)

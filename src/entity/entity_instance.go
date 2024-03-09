@@ -26,4 +26,5 @@ type SearchEntityInstanceParams struct {
 	CreatedAt         string `json:"created_at"`
 	OnlyStatusMonitor bool   `json:"only_status_monitor"`
 	OnlyActive        bool   `json:"only_active"`
+	ExcludeBlankName  bool   `json:"exclude_blank_name"`
 }
