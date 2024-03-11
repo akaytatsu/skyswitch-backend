@@ -50,7 +50,7 @@ func (h *LogHandler) GetLog(c *gin.Context) {
 // @Success 200 {object} []entity.EntityLog "success"
 // @Router /api/log [get]
 func (h *LogHandler) GetAllLog(c *gin.Context) {
-	orderBy, sortOrder := getOrderByParams(c, "updated_at")
+	orderBy, sortOrder := getOrderByParams(c, "created_at")
 	pagina, tamanhoPagina := getPaginationParams(c)
 
 	params := entity.SearchEntityLogParams{
