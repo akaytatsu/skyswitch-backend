@@ -14,6 +14,7 @@ import (
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	usecase_job "app/usecase/job"
+	usecase_log "app/usecase/log"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,10 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	var usecaseLog usecase_log.IUsecaseLog = usecase_log.NewService(
+		repository.NewLogPostgres(conn),
+	)
+
 	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
 		repository.NewInstancePostgres(conn),
 	)
@@ -63,6 +68,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecaseCloudAccount,
 		usecaseHoliday,
+		usecaseLog,
 	)
 
 	var usecaseJob usecase_job.IUsecaseJob = usecase_job.NewService()
@@ -72,6 +78,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 	handlers.MountInstancesRoutes(r, conn)
 	handlers.MountCalendarRoutes(r, conn, usecaseCalendar)
 	handlers.MountJobRoutes(r, conn, usecaseJob)
+	handlers.MountLogRoutes(r, conn, usecaseLog)
 
 	return r
 }

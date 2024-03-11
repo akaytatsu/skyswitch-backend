@@ -6,6 +6,8 @@ import (
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
+	usecase_log "app/usecase/log"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -20,13 +22,15 @@ type UsecaseCalendar struct {
 	infraCloudProvider   infrastructure_cloud_provider.ICloudProvider
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount
 	usecaseHoliday       usecase_holiday.IUsecaseHoliday
+	usecaseLog           usecase_log.IUsecaseLog
 }
 
 func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 	usecaseInstance usecase_instance.IUseCaseInstance,
 	infraCloudProvider infrastructure_cloud_provider.ICloudProvider,
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount,
-	usecaseHoliday usecase_holiday.IUsecaseHoliday) *UsecaseCalendar {
+	usecaseHoliday usecase_holiday.IUsecaseHoliday,
+	usecaseLog usecase_log.IUsecaseLog) *UsecaseCalendar {
 	return &UsecaseCalendar{
 		repo:                 repository,
 		scheduler:            scheduler,
@@ -34,6 +38,7 @@ func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 		infraCloudProvider:   infraCloudProvider,
 		usecaseCloudAccoount: usecaseCloudAccoount,
 		usecaseHoliday:       usecaseHoliday,
+		usecaseLog:           usecaseLog,
 	}
 }
 
@@ -69,7 +74,7 @@ func (u *UsecaseCalendar) CreateAllCalendarsJob() error {
 	}
 
 	for _, calendar := range calendars {
-		log.Println("CreateAllCalendarsJob: ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active, " - ", calendar.ExecuteTime, " - ", calendar.TypeAction, " - ", calendar.ValidHoliday, " - ", calendar.Sunday, " - ", calendar.Monday, " - ", calendar.Tuesday, " - ", calendar.Wednesday, " - ", calendar.Thursday, " - ", calendar.Friday, " - ", calendar.Saturday)
+		// log.Println("CreateAllCalendarsJob: ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active, " - ", calendar.ExecuteTime, " - ", calendar.TypeAction, " - ", calendar.ValidHoliday, " - ", calendar.Sunday, " - ", calendar.Monday, " - ", calendar.Tuesday, " - ", calendar.Wednesday, " - ", calendar.Thursday, " - ", calendar.Friday, " - ", calendar.Saturday)
 		u.configureSchedules(&calendar)
 	}
 
@@ -110,6 +115,7 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 	}
 
 	for _, instance := range instances {
+
 		err := u.infraCloudProvider.Connect(instance.CloudAccount)
 
 		if err != nil {
@@ -128,15 +134,37 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 				}
 			}
 
-			if calendar.TypeAction == "on" {
-				// println("start: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
+			logInstance := entity.EntityLog{
+				Code:     "job execute",
+				Instance: fmt.Sprintf("instance id: %s, instance name: %s", instance.InstanceID, instance.InstanceName),
+				Content: fmt.Sprintf(
+					"instance id: %s, calendar id: %d, calendar name: %s, instance name: %s",
+					instance.InstanceID,
+					calendar.ID,
+					calendar.Name,
+					instance.InstanceName),
+				CreatedAt: time.Now(),
+			}
 
-				u.infraCloudProvider.StartInstance(instance.InstanceID)
+			if calendar.TypeAction == "on" {
+				err = u.infraCloudProvider.StartInstance(instance.InstanceID)
+
+				logInstance.Type = "start"
+
+				if err != nil {
+					logInstance.Error = err.Error()
+				}
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "running")
 			} else if calendar.TypeAction == "off" {
-				// println("stop: ", instance.InstanceID, " - ", calendar.TypeAction, " - ", calendar.ExecuteTime, " - ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active)
-				u.infraCloudProvider.StopInstance(instance.InstanceID)
+
+				logInstance.Type = "start"
+
+				err = u.infraCloudProvider.StopInstance(instance.InstanceID)
+
+				if err != nil {
+					logInstance.Error = err.Error()
+				}
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "stopped")
 			}

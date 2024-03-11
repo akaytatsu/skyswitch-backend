@@ -112,6 +112,23 @@ definitions:
       scheduled_time:
         type: string
     type: object
+  entity.EntityLog:
+    properties:
+      code:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      error:
+        type: string
+      id:
+        type: integer
+      instance:
+        type: string
+      type:
+        type: string
+    type: object
   entity.EntityUser:
     properties:
       active:
@@ -607,6 +624,44 @@ paths:
       summary: Get All Job
       tags:
       - Job
+  /api/log:
+    get:
+      consumes:
+      - application/json
+      description: Get All Log
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityLog'
+            type: array
+      summary: Get All Log
+      tags:
+      - Log
+  /api/log/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Log
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityLog'
+      summary: Get Log
+      tags:
+      - Log
   /api/login:
     post:
       consumes:

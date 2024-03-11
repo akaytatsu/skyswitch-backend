@@ -728,6 +728,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/log": {
+            "get": {
+                "description": "Get All Log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Log"
+                ],
+                "summary": "Get All Log",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityLog"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/log/{id}": {
+            "get": {
+                "description": "Get Log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Log"
+                ],
+                "summary": "Get Log",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityLog"
+                        }
+                    }
+                }
+            }
+        },
         "/api/login": {
             "post": {
                 "description": "Login",
@@ -1203,6 +1261,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "scheduled_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.EntityLog": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "instance": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 }
             }

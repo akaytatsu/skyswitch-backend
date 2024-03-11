@@ -9,6 +9,7 @@ import (
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
+	usecase_log "app/usecase/log"
 	"os"
 	"time"
 
@@ -39,6 +40,10 @@ func StartCronJobs() {
 func StartJobsCalendars() {
 	conn := postgres.Connect()
 
+	var usecaseLog usecase_log.IUsecaseLog = usecase_log.NewService(
+		repository.NewLogPostgres(conn),
+	)
+
 	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
 		repository.NewInstancePostgres(conn),
 	)
@@ -60,6 +65,7 @@ func StartJobsCalendars() {
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecaseCloudAccount,
 		usecaseHoliday,
+		usecaseLog,
 	)
 
 	usecaseCalendar.CreateAllCalendarsJob()
