@@ -277,8 +277,8 @@ func MountUsersHandlers(gin *gin.Engine, conn *gorm.DB) {
 
 	SetAdminMiddleware(conn, group)
 	group.GET("/", userHandlers.GetUsersHandler)
-	group.POST("/create", userHandlers.CreateUserHandler)
-	group.PUT("/:id", userHandlers.UpdateUserHandler)
+	group.POST("/", userHandlers.CreateUserHandler)
+	group.PUT("/", userHandlers.UpdateUserHandler)
 	group.DELETE("/:id", userHandlers.DeleteUserHandler)
 	group.PUT("/password/:id", userHandlers.UpdatePasswordHandler)
 	group.GET("/:id", userHandlers.GetUserHandler)
