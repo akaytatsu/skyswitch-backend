@@ -5,7 +5,9 @@ import (
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	usecase_calendar "app/usecase/calendar"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	"os"
 	"time"
@@ -32,6 +34,36 @@ func StartCronJobs() {
 	s.Every(30).Minutes().Do(updateInstances)
 
 	s.StartAsync()
+}
+
+func StartJobsCalendars() {
+	conn := postgres.Connect()
+
+	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
+		repository.NewInstancePostgres(conn),
+	)
+
+	var usecaseCloudAccount usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
+		repository.NewCloudAccountPostgres(conn),
+		usecaseInstance,
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+	)
+
+	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(
+		repository.NewHolidayPostgres(conn),
+	)
+
+	var usecaseCalendar usecase_calendar.IUsecaseCalendar = usecase_calendar.NewService(
+		repository.NewCalendarPostgres(conn),
+		Scheduler,
+		usecaseInstance,
+		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		usecaseCloudAccount,
+		usecaseHoliday,
+	)
+
+	usecaseCalendar.CreateAllCalendarsJob()
+
 }
 
 func updateInstances() {

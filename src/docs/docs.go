@@ -649,6 +649,83 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update instance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Instances"
+                ],
+                "summary": "Update instance",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Instance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Instance",
+                        "name": "entity.EntityInstance",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityInstance"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityInstance"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/job": {
+            "get": {
+                "description": "Get All Job",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Get All Job",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityJob"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/login": {
@@ -967,11 +1044,11 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "execute_time": {
+                    "type": "string"
+                },
                 "friday": {
                     "type": "boolean"
-                },
-                "fridayDate": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -979,35 +1056,20 @@ const docTemplate = `{
                 "monday": {
                     "type": "boolean"
                 },
-                "mondayDate": {
-                    "type": "string"
-                },
                 "name": {
                     "type": "string"
                 },
                 "saturday": {
                     "type": "boolean"
                 },
-                "saturdayDate": {
-                    "type": "string"
-                },
                 "sunday": {
                     "type": "boolean"
-                },
-                "sundayDate": {
-                    "type": "string"
                 },
                 "thursday": {
                     "type": "boolean"
                 },
-                "thursdayDate": {
-                    "type": "string"
-                },
                 "tuesday": {
                     "type": "boolean"
-                },
-                "tuesdayDate": {
-                    "type": "string"
                 },
                 "type_action": {
                     "type": "string"
@@ -1023,9 +1085,6 @@ const docTemplate = `{
                 },
                 "wednesday": {
                     "type": "boolean"
-                },
-                "wednesdayDate": {
-                    "type": "string"
                 }
             }
         },
@@ -1048,6 +1107,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "nickname": {
+                    "type": "string"
+                },
+                "region": {
                     "type": "string"
                 },
                 "secret_access_key": {
@@ -1081,6 +1143,15 @@ const docTemplate = `{
                 "active": {
                     "type": "boolean"
                 },
+                "calendars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.EntityCalendar"
+                    }
+                },
+                "cloud_account": {
+                    "$ref": "#/definitions/entity.EntityCloudAccount"
+                },
                 "cloud_account_id": {
                     "type": "integer"
                 },
@@ -1106,6 +1177,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.EntityJob": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_running": {
+                    "type": "boolean"
+                },
+                "last_run": {
+                    "type": "string"
+                },
+                "next_run": {
+                    "type": "string"
+                },
+                "scheduled_time": {
                     "type": "string"
                 }
             }

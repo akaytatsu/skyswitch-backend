@@ -13,6 +13,7 @@ import (
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
+	usecase_job "app/usecase/job"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -64,10 +65,13 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		usecaseHoliday,
 	)
 
+	var usecaseJob usecase_job.IUsecaseJob = usecase_job.NewService()
+
 	handlers.MountCloudAccountHandlers(r, conn)
 	handlers.MountUsersHandlers(r, conn)
 	handlers.MountInstancesRoutes(r, conn)
 	handlers.MountCalendarRoutes(r, conn, usecaseCalendar)
+	handlers.MountJobRoutes(r, conn, usecaseJob)
 
 	return r
 }

@@ -103,7 +103,7 @@ func (h *IntancesHandlers) GetByIDInstanceHandler(c *gin.Context) {
 // @Produce  json
 // @Param id path int true "Instance ID"
 // @Param entity.EntityInstance body entity.EntityInstance true "Instance"
-// @Param Authorization header string true "
+// @Param Authorization header string true "Bearer Token"
 // @Security ApiKeyAuth
 // @Success 200 {object} entity.EntityInstance "success"
 // @Router /api/instances/{id} [put]

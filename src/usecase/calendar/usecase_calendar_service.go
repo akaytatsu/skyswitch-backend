@@ -57,6 +57,25 @@ func (u *UsecaseCalendar) Create(calendar *entity.EntityCalendar) error {
 	return nil
 }
 
+func (u *UsecaseCalendar) CreateAllCalendarsJob() error {
+
+	calendars, _, err := u.GetAll(entity.SearchEntityCalendarParams{
+		PageSize: 1000000,
+		Page:     0,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	for _, calendar := range calendars {
+		log.Println("CreateAllCalendarsJob: ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active, " - ", calendar.ExecuteTime, " - ", calendar.TypeAction, " - ", calendar.ValidHoliday, " - ", calendar.Sunday, " - ", calendar.Monday, " - ", calendar.Tuesday, " - ", calendar.Wednesday, " - ", calendar.Thursday, " - ", calendar.Friday, " - ", calendar.Saturday)
+		u.configureSchedules(&calendar)
+	}
+
+	return nil
+}
+
 func (u *UsecaseCalendar) Update(calendar *entity.EntityCalendar) error {
 	err := u.repo.Update(calendar)
 

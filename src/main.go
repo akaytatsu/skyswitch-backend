@@ -31,5 +31,7 @@ func main() {
 		log.Println(err)
 	}
 
+	cron.StartJobsCalendars()
+
 	api.StartWebServer()
 }

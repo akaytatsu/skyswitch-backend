@@ -5,34 +5,24 @@ definitions:
         type: boolean
       created_at:
         type: string
+      execute_time:
+        type: string
       friday:
         type: boolean
-      fridayDate:
-        type: string
       id:
         type: integer
       monday:
         type: boolean
-      mondayDate:
-        type: string
       name:
         type: string
       saturday:
         type: boolean
-      saturdayDate:
-        type: string
       sunday:
         type: boolean
-      sundayDate:
-        type: string
       thursday:
         type: boolean
-      thursdayDate:
-        type: string
       tuesday:
         type: boolean
-      tuesdayDate:
-        type: string
       type_action:
         type: string
       updated_at:
@@ -43,8 +33,6 @@ definitions:
         type: boolean
       wednesday:
         type: boolean
-      wednesdayDate:
-        type: string
     type: object
   entity.EntityCloudAccount:
     properties:
@@ -59,6 +47,8 @@ definitions:
       id:
         type: integer
       nickname:
+        type: string
+      region:
         type: string
       secret_access_key:
         type: string
@@ -80,6 +70,12 @@ definitions:
     properties:
       active:
         type: boolean
+      calendars:
+        items:
+          $ref: '#/definitions/entity.EntityCalendar'
+        type: array
+      cloud_account:
+        $ref: '#/definitions/entity.EntityCloudAccount'
       cloud_account_id:
         type: integer
       createdAt:
@@ -97,6 +93,23 @@ definitions:
       instance_type:
         type: string
       updatedAt:
+        type: string
+    type: object
+  entity.EntityJob:
+    properties:
+      count:
+        type: integer
+      error:
+        type: string
+      id:
+        type: string
+      is_running:
+        type: boolean
+      last_run:
+        type: string
+      next_run:
+        type: string
+      scheduled_time:
         type: string
     type: object
   entity.EntityUser:
@@ -544,6 +557,56 @@ paths:
       summary: Get instance by id
       tags:
       - Instances
+    put:
+      consumes:
+      - application/json
+      description: Update instance
+      parameters:
+      - description: Instance ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Instance
+        in: body
+        name: entity.EntityInstance
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityInstance'
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityInstance'
+      security:
+      - ApiKeyAuth: []
+      summary: Update instance
+      tags:
+      - Instances
+  /api/job:
+    get:
+      consumes:
+      - application/json
+      description: Get All Job
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityJob'
+            type: array
+      summary: Get All Job
+      tags:
+      - Job
   /api/login:
     post:
       consumes:
