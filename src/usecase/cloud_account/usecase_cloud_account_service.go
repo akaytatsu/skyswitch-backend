@@ -100,16 +100,12 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudA
 
 		instance.Active = aux.Active
 
-		println(aux.Active, " - ", instance.Active, " - ", aux.ID, " - ", instance.ID)
-
 		err = u.useCaseInstances.CreateOrUpdateInstance(instance, false)
 
 		if err != nil {
 			log.Println("Error creating or updating instance: ", err)
 		}
 	}
-
-	println("finish update all instances on cloud account provider, cloud")
 
 	return instances, nil
 }

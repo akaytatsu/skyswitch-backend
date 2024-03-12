@@ -156,6 +156,8 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 				}
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "running")
+
+				u.usecaseLog.Create(&logInstance)
 			} else if calendar.TypeAction == "off" {
 
 				logInstance.Type = "start"
@@ -167,6 +169,7 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 				}
 
 				u.scheduleUpdateInstance(instance.CloudAccount, instance, "stopped")
+				u.usecaseLog.Create(&logInstance)
 			}
 		}
 	}
