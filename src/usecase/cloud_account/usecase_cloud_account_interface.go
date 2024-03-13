@@ -2,6 +2,7 @@ package usecase_cloud_account
 
 import "app/entity"
 
+//go:generate mockgen -destination=../../mocks/mock_usecase_repository_cloud_account.go -package=mocks app/usecase/cloud_account IRepositoryCloudAccount
 type IRepositoryCloudAccount interface {
 	GetAll(searchParams entity.SearchEntityCloudAccountParams) (response []entity.EntityCloudAccount, totalRegisters int64, err error)
 	GetByID(id int64) (cloudAccount *entity.EntityCloudAccount, err error)
@@ -11,6 +12,7 @@ type IRepositoryCloudAccount interface {
 	ActiveDeactiveCloudAccount(id int64, status bool) (cloudAccount *entity.EntityCloudAccount, err error)
 }
 
+//go:generate mockgen -destination=../../mocks/mock_usecase_cloud_account.go -package=mocks app/usecase/cloud_account IUsecaseCloudAccount
 type IUsecaseCloudAccount interface {
 	GetAll(searchParams entity.SearchEntityCloudAccountParams) (response []entity.EntityCloudAccount, totalRegisters int64, err error)
 	GetByID(id int64) (cloudAccount *entity.EntityCloudAccount, err error)
