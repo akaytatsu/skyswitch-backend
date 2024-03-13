@@ -61,7 +61,8 @@ func (r *RepositoryLog) GetAll(searchParams entity.SearchEntityLogParams) (respo
 		searchParams.SortOrder = "desc"
 	}
 
-	qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
+	// qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
+	qry = qry.Order("created_at desc").
 		Offset(offset).
 		Limit(searchParams.PageSize)
 
