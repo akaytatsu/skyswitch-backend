@@ -54,7 +54,7 @@ func (r *RepositoryLog) GetAll(searchParams entity.SearchEntityLogParams) (respo
 	}
 
 	if searchParams.OrderBy == "" {
-		searchParams.OrderBy = "id"
+		searchParams.OrderBy = "created_at"
 	}
 
 	if searchParams.SortOrder == "" {
