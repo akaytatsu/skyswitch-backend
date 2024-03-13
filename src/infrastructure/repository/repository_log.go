@@ -58,7 +58,7 @@ func (r *RepositoryLog) GetAll(searchParams entity.SearchEntityLogParams) (respo
 	}
 
 	if searchParams.SortOrder == "" {
-		searchParams.SortOrder = "asc"
+		searchParams.SortOrder = "desc"
 	}
 
 	qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
