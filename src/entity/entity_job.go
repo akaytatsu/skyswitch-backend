@@ -7,13 +7,14 @@ import (
 )
 
 type EntityJob struct {
-	ID            string    `json:"id"`
-	IsRunning     bool      `json:"is_running"`
-	LastRun       time.Time `json:"last_run"`
-	NextRun       time.Time `json:"next_run"`
-	Count         int       `json:"count"`
-	Error         string    `json:"error"`
-	ScheduledTime time.Time `json:"scheduled_time"`
+	ID            string         `json:"id"`
+	IsRunning     bool           `json:"is_running"`
+	LastRun       time.Time      `json:"last_run"`
+	NextRun       time.Time      `json:"next_run"`
+	Count         int            `json:"count"`
+	Error         string         `json:"error"`
+	ScheduledTime time.Time      `json:"scheduled_time"`
+	Calendar      EntityCalendar `json:"calendar"`
 }
 
 func NewEntityJob(entityJobParam EntityJob) (*EntityJob, error) {

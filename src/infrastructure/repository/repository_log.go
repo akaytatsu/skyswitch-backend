@@ -76,7 +76,7 @@ func (r *RepositoryLog) GetAll(searchParams entity.SearchEntityLogParams) (respo
 func (r *RepositoryLog) Create(log *entity.EntityLog) (err error) {
 	err = r.DB.Create(&log).Error
 
-	return
+	return err
 }
 
 func (r *RepositoryLog) Update(log *entity.EntityLog) (err error) {

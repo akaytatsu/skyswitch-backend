@@ -71,7 +71,9 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		usecaseLog,
 	)
 
-	var usecaseJob usecase_job.IUsecaseJob = usecase_job.NewService()
+	var usecaseJob usecase_job.IUsecaseJob = usecase_job.NewService(
+		usecaseCalendar,
+	)
 
 	handlers.MountCloudAccountHandlers(r, conn)
 	handlers.MountUsersHandlers(r, conn)

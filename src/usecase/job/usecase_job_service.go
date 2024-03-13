@@ -3,13 +3,19 @@ package usecase_job
 import (
 	"app/cron"
 	"app/entity"
+	usecase_calendar "app/usecase/calendar"
+	"strconv"
+	"strings"
 )
 
 type UsecaseJob struct {
+	usecaseCalendar usecase_calendar.IUsecaseCalendar
 }
 
-func NewService() *UsecaseJob {
-	return &UsecaseJob{}
+func NewService(usecaseCalendar usecase_calendar.IUsecaseCalendar) *UsecaseJob {
+	return &UsecaseJob{
+		usecaseCalendar: usecaseCalendar,
+	}
 }
 
 func (u *UsecaseJob) GetAll() (response []entity.EntityJob, err error) {
@@ -39,6 +45,16 @@ func (u *UsecaseJob) GetAll() (response []entity.EntityJob, err error) {
 			Error:         errorData,
 			ScheduledTime: entry.ScheduledTime().Local(),
 		}
+
+		// pega o id do calendario, se o job tiver tag, a tag é calendar_x_y, sendo o X o id
+		if tagID != "" {
+			if strings.Split(tagID, "_")[0] == "calendar" && len(strings.Split(tagID, "_")) > 1 {
+				id, _ := strconv.Atoi(strings.Split(tagID, "_")[1])
+				calendar, _ := u.usecaseCalendar.Get(id)
+				job.Calendar = *calendar
+			}
+		}
+
 		response = append(response, job)
 	}
 
