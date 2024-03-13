@@ -7,6 +7,7 @@ import (
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	usecase_log "app/usecase/log"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -23,6 +24,7 @@ type UsecaseCalendar struct {
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount
 	usecaseHoliday       usecase_holiday.IUsecaseHoliday
 	usecaseLog           usecase_log.IUsecaseLog
+	Now                  func() time.Time
 }
 
 func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
@@ -39,6 +41,7 @@ func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 		usecaseCloudAccoount: usecaseCloudAccoount,
 		usecaseHoliday:       usecaseHoliday,
 		usecaseLog:           usecaseLog,
+		Now:                  time.Now,
 	}
 }
 
@@ -74,7 +77,6 @@ func (u *UsecaseCalendar) CreateAllCalendarsJob() error {
 	}
 
 	for _, calendar := range calendars {
-		// log.Println("CreateAllCalendarsJob: ", calendar.ID, " - ", calendar.Name, " - ", calendar.Active, " - ", calendar.ExecuteTime, " - ", calendar.TypeAction, " - ", calendar.ValidHoliday, " - ", calendar.Sunday, " - ", calendar.Monday, " - ", calendar.Tuesday, " - ", calendar.Wednesday, " - ", calendar.Thursday, " - ", calendar.Friday, " - ", calendar.Saturday)
 		u.configureSchedules(&calendar)
 	}
 
@@ -106,71 +108,62 @@ func (u *UsecaseCalendar) Delete(id int) error {
 	return u.repo.Delete(id)
 }
 
+func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calendar *entity.EntityCalendar) error {
+	err := u.infraCloudProvider.Connect(instance.CloudAccount)
+	if err != nil {
+		log.Println("Error on connect to cloud provider: ", err)
+		return err
+	}
+
+	if instance.Active && calendar.Active {
+		if check, _ := u.usecaseHoliday.IsHoliday(u.Now()); check && calendar.ValidHoliday {
+			return errors.New("today is holiday")
+		}
+
+		logInstance := entity.EntityLog{
+			Code:     "job execute",
+			Instance: fmt.Sprintf("instance id: %s, instance name: %s", instance.InstanceID, instance.InstanceName),
+			Content: fmt.Sprintf(
+				"instance id: %s, calendar id: %d, calendar name: %s, instance name: %s",
+				instance.InstanceID,
+				calendar.ID,
+				calendar.Name,
+				instance.InstanceName),
+			CreatedAt: u.Now(),
+		}
+
+		if calendar.TypeAction == "on" {
+			err = u.infraCloudProvider.StartInstance(instance.InstanceID)
+			logInstance.Type = "start"
+			if err != nil {
+				logInstance.Error = err.Error()
+			}
+			u.scheduleUpdateInstance(instance.CloudAccount, *instance, "running")
+		} else if calendar.TypeAction == "off" {
+			logInstance.Type = "start"
+			err = u.infraCloudProvider.StopInstance(instance.InstanceID)
+			if err != nil {
+				logInstance.Error = err.Error()
+			}
+			u.scheduleUpdateInstance(instance.CloudAccount, *instance, "stopped")
+		}
+
+		u.usecaseLog.Create(&logInstance)
+	}
+
+	return errors.New("instance or calendar is not active")
+}
+
 func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) error {
-
 	instances, err := u.usecaseInstance.GetAllOFCalendar(calendar.ID)
-
 	if err != nil {
 		return err
 	}
 
 	for _, instance := range instances {
-
-		err := u.infraCloudProvider.Connect(instance.CloudAccount)
-
+		err := u.ProcessInstance(&instance, calendar)
 		if err != nil {
-			log.Println("Error on connect to cloud provider: ", err)
 			continue
-		}
-		if instance.Active {
-
-			if !calendar.Active {
-				continue
-			}
-
-			if check, _ := u.usecaseHoliday.IsHoliday(time.Now()); check {
-				if !calendar.ValidHoliday {
-					continue
-				}
-			}
-
-			logInstance := entity.EntityLog{
-				Code:     "job execute",
-				Instance: fmt.Sprintf("instance id: %s, instance name: %s", instance.InstanceID, instance.InstanceName),
-				Content: fmt.Sprintf(
-					"instance id: %s, calendar id: %d, calendar name: %s, instance name: %s",
-					instance.InstanceID,
-					calendar.ID,
-					calendar.Name,
-					instance.InstanceName),
-				CreatedAt: time.Now(),
-			}
-
-			if calendar.TypeAction == "on" {
-				err = u.infraCloudProvider.StartInstance(instance.InstanceID)
-
-				logInstance.Type = "start"
-
-				if err != nil {
-					logInstance.Error = err.Error()
-				}
-
-				u.scheduleUpdateInstance(instance.CloudAccount, instance, "running")
-
-				u.usecaseLog.Create(&logInstance)
-			} else if calendar.TypeAction == "off" {
-
-				logInstance.Type = "start"
-
-				err = u.infraCloudProvider.StopInstance(instance.InstanceID)
-
-				if err != nil {
-					logInstance.Error = err.Error()
-				}
-
-				u.scheduleUpdateInstance(instance.CloudAccount, instance, "stopped")
-				u.usecaseLog.Create(&logInstance)
-			}
 		}
 	}
 
