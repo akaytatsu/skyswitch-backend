@@ -151,7 +151,7 @@ func TestProcessInstance_IsHolidayValid(t *testing.T) {
 		ID:           1,
 		Active:       true,
 		TypeAction:   "on",
-		ValidHoliday: true,
+		ValidHoliday: false,
 	}
 
 	mocksConfig, u := configureMocks(ctrl)
@@ -169,45 +169,70 @@ func TestProcessInstance_IsHolidayValid(t *testing.T) {
 	assert.Equal(t, "today is holiday", err.Error())
 }
 
-// func TestProccessCalendar(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+func TestProcessInstance_TypeActionONError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	mockUsecaseInstance := mocks.NewMockIUseCaseInstance(ctrl)
-// 	mockInfraCloudProvider := mocks.NewMockICloudProvider(ctrl)
-// 	mockUsecaseHoliday := mocks.NewMockIUsecaseHoliday(ctrl)
-// 	mockUsecaseLog := mocks.NewMockIUsecaseLog(ctrl)
+	instance := &entity.EntityInstance{
+		InstanceID:   "testID",
+		InstanceName: "testName",
+		Active:       true,
+		CloudAccount: entity.EntityCloudAccount{
+			ID: 1,
+		},
+	}
 
-// 	calendar := &entity.EntityCalendar{
-// 		ID:         1,
-// 		Active:     true,
-// 		TypeAction: "on",
-// 	}
+	calendar := &entity.EntityCalendar{
+		ID:         1,
+		Active:     true,
+		TypeAction: "on",
+	}
 
-// 	instance := &entity.EntityInstance{
-// 		InstanceID:   "testID",
-// 		InstanceName: "testName",
-// 		Active:       true,
-// 		CloudAccount: entity.EntityCloudAccount{
-// 			ID: 1,
-// 		},
-// 	}
+	mocksConfig, u := configureMocks(ctrl)
 
-// 	mockUsecaseInstance.EXPECT().GetAllOFCalendar(calendar.ID).Return([]*entity.EntityInstance{instance}, nil)
-// 	mockInfraCloudProvider.EXPECT().Connect(instance.CloudAccount).Return(nil)
-// 	mockUsecaseHoliday.EXPECT().IsHoliday(gomock.Any()).Return(false, nil)
-// 	mockInfraCloudProvider.EXPECT().StartInstance(instance.InstanceID).Return(nil)
-// 	mockUsecaseLog.EXPECT().Create(gomock.Any()).Return(nil)
+	u.Now = func() time.Time {
+		return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
 
-// 	u := &usecase.UsecaseCalendar{
-// 		usecaseInstance:    mockUsecaseInstance,
-// 		infraCloudProvider: mockInfraCloudProvider,
-// 		usecaseHoliday:     mockUsecaseHoliday,
-// 		usecaseLog:         mockUsecaseLog,
-// 	}
+	mocksConfig.mockInfraCloudProvider.EXPECT().Connect(instance.CloudAccount).Return(nil)
+	mocksConfig.mockUsecaseHoliday.EXPECT().IsHoliday(gomock.Any()).Return(false, nil)
+	mocksConfig.mockInfraCloudProvider.EXPECT().StartInstance(instance.InstanceID).Return(errors.New("error starting instance"))
+	mocksConfig.mockUsecaseLog.EXPECT().Create(gomock.Any()).Return(nil)
 
-// 	err := u.ProccessCalendar(calendar)
-// 	if err != nil {
-// 		t.Errorf("Expected no error, but got %v", err)
-// 	}
-// }
+	err := u.ProcessInstance(instance, calendar)
+
+	assert.Error(t, err)
+	assert.Equal(t, "error starting instance", err.Error())
+}
+
+func TestProcessInstance_TypeActionOFFNError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	instance := &entity.EntityInstance{
+		InstanceID:   "testID",
+		InstanceName: "testName",
+		Active:       true,
+		CloudAccount: entity.EntityCloudAccount{
+			ID: 1,
+		},
+	}
+
+	calendar := &entity.EntityCalendar{
+		ID:         1,
+		Active:     true,
+		TypeAction: "off",
+	}
+
+	mocksConfig, u := configureMocks(ctrl)
+
+	mocksConfig.mockInfraCloudProvider.EXPECT().Connect(instance.CloudAccount).Return(nil)
+	mocksConfig.mockUsecaseHoliday.EXPECT().IsHoliday(gomock.Any()).Return(false, nil)
+	mocksConfig.mockInfraCloudProvider.EXPECT().StopInstance(instance.InstanceID).Return(errors.New("error stopping instance"))
+	mocksConfig.mockUsecaseLog.EXPECT().Create(gomock.Any()).Return(nil)
+
+	err := u.ProcessInstance(instance, calendar)
+
+	assert.Error(t, err)
+	assert.Equal(t, "error stopping instance", err.Error())
+}

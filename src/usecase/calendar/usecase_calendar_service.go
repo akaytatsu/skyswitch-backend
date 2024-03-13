@@ -116,7 +116,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calen
 	}
 
 	if instance.Active && calendar.Active {
-		if check, _ := u.usecaseHoliday.IsHoliday(u.Now()); check && calendar.ValidHoliday {
+		if check, _ := u.usecaseHoliday.IsHoliday(u.Now()); check && !calendar.ValidHoliday {
 			return errors.New("today is holiday")
 		}
 
@@ -137,18 +137,26 @@ func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calen
 			logInstance.Type = "start"
 			if err != nil {
 				logInstance.Error = err.Error()
+				u.usecaseLog.Create(&logInstance)
+				return err
 			}
-			u.scheduleUpdateInstance(instance.CloudAccount, *instance, "running")
+			u.ScheduleUpdateInstance(instance.CloudAccount, *instance, "running")
+			u.usecaseLog.Create(&logInstance)
+
+			return nil
 		} else if calendar.TypeAction == "off" {
-			logInstance.Type = "start"
+			logInstance.Type = "stop"
 			err = u.infraCloudProvider.StopInstance(instance.InstanceID)
 			if err != nil {
 				logInstance.Error = err.Error()
+				u.usecaseLog.Create(&logInstance)
+				return err
 			}
-			u.scheduleUpdateInstance(instance.CloudAccount, *instance, "stopped")
+			u.ScheduleUpdateInstance(instance.CloudAccount, *instance, "stopped")
+			u.usecaseLog.Create(&logInstance)
+			return nil
 		}
 
-		u.usecaseLog.Create(&logInstance)
 	}
 
 	return errors.New("instance or calendar is not active")
@@ -170,7 +178,7 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 	return nil
 }
 
-func (u *UsecaseCalendar) scheduleUpdateInstance(cloudAccount entity.EntityCloudAccount,
+func (u *UsecaseCalendar) ScheduleUpdateInstance(cloudAccount entity.EntityCloudAccount,
 	instance entity.EntityInstance, finishStatus string) {
 
 	var counter int = 0
@@ -230,12 +238,6 @@ func (u *UsecaseCalendar) configureSchedules(calendar *entity.EntityCalendar) {
 			}
 		}
 	}
-
-	// lista todos os jobs agendados
-	// jobs := u.scheduler.Jobs()
-	// for _, job := range jobs {
-	// 	println(job.Tags, job.NextRun().GoString(), job.ScheduledTime().GoString())
-	// }
 }
 
 func (u *UsecaseCalendar) cleanTags(calendar *entity.EntityCalendar) {
