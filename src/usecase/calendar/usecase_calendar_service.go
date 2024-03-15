@@ -77,7 +77,9 @@ func (u *UsecaseCalendar) CreateAllCalendarsJob() error {
 	}
 
 	for _, calendar := range calendars {
-		u.configureSchedules(&calendar)
+		if calendar.Active {
+			u.configureSchedules(&calendar)
+		}
 	}
 
 	return nil
@@ -169,10 +171,11 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 	}
 
 	for _, instance := range instances {
-		err := u.ProcessInstance(&instance, calendar)
-		if err != nil {
+		if !instance.Active {
 			continue
 		}
+
+		go u.ProcessInstance(&instance, calendar)
 	}
 
 	return nil

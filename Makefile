@@ -103,3 +103,7 @@ update_generator:
 
 generator_crud:
 	yo go-clean-architecture-crud
+
+restore_database: show_env
+	docker-compose ${DOCKER_COMPOSE_FILE} exec db psql -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c "drop schema public cascade; create schema public;"
+	docker-compose ${DOCKER_COMPOSE_FILE} exec db pg_restore -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c -v /db/skyswitch.dmp
