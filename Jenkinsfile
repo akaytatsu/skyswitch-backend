@@ -54,6 +54,14 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'docker-compose -f docker-compose.yml exec -T app go test -v ./...'
+                }
+            }
+        }
+
         stage('stop containers') {
             steps {
                 script {

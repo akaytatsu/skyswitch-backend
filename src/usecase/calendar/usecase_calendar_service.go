@@ -253,6 +253,11 @@ func (u *UsecaseCalendar) cleanTags(calendar *entity.EntityCalendar) {
 		u.scheduler.RemoveByTag(tag)
 	}
 
+	for _, job := range u.scheduler.Jobs() {
+		if len(job.Tags()) > 0 {
+			u.scheduler.RemoveByReference(job)
+		}
+	}
 }
 
 func (u *UsecaseCalendar) toDaysInt(calendar *entity.EntityCalendar) (days []int) {
