@@ -57,7 +57,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml exec -T app go test -v ./...'
+                    sh 'docker-compose -f docker-compose.yml exec -T app go test ./...'
+                    sh 'docker-compose -f docker-compose.yml exec -T app go test -fuzz=./...'
+                    sh 'docker-compose -f docker-compose.yml exec -T app go test -bench=. ./...'
                 }
             }
         }

@@ -236,3 +236,16 @@ func TestProcessInstance_TypeActionOFFNError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "error stopping instance", err.Error())
 }
+
+func BenchmarkGetAll(b *testing.B) {
+	ctrl := gomock.NewController(b)
+	defer ctrl.Finish()
+
+	mocksConfig, u := configureMocks(ctrl)
+
+	mocksConfig.mockIRepoCalendar.EXPECT().GetAll(gomock.Any()).Return([]entity.EntityCalendar{}, int64(0), nil).Times(b.N)
+
+	for i := 0; i < b.N; i++ {
+		u.GetAll(entity.SearchEntityCalendarParams{})
+	}
+}
