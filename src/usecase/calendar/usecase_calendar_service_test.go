@@ -52,7 +52,7 @@ func TestProcessInstance_ErrorConnectionCloud(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       true,
@@ -61,7 +61,7 @@ func TestProcessInstance_ErrorConnectionCloud(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:         1,
 		Active:     true,
 		TypeAction: "on",
@@ -82,7 +82,7 @@ func TestProcessInstance_instanceActiveFalse(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       false,
@@ -91,7 +91,7 @@ func TestProcessInstance_instanceActiveFalse(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:         1,
 		Active:     true,
 		TypeAction: "on",
@@ -110,7 +110,7 @@ func TestProcessInstance_CalendarActiveFalse(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       true,
@@ -119,7 +119,7 @@ func TestProcessInstance_CalendarActiveFalse(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:         1,
 		Active:     false,
 		TypeAction: "on",
@@ -138,7 +138,7 @@ func TestProcessInstance_IsHolidayValid(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       true,
@@ -147,7 +147,7 @@ func TestProcessInstance_IsHolidayValid(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:           1,
 		Active:       true,
 		TypeAction:   "on",
@@ -173,7 +173,7 @@ func TestProcessInstance_TypeActionONError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       true,
@@ -182,7 +182,7 @@ func TestProcessInstance_TypeActionONError(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:         1,
 		Active:     true,
 		TypeAction: "on",
@@ -209,7 +209,7 @@ func TestProcessInstance_TypeActionOFFNError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	instance := &entity.EntityInstance{
+	instance := entity.EntityInstance{
 		InstanceID:   "testID",
 		InstanceName: "testName",
 		Active:       true,
@@ -218,7 +218,7 @@ func TestProcessInstance_TypeActionOFFNError(t *testing.T) {
 		},
 	}
 
-	calendar := &entity.EntityCalendar{
+	calendar := entity.EntityCalendar{
 		ID:         1,
 		Active:     true,
 		TypeAction: "off",

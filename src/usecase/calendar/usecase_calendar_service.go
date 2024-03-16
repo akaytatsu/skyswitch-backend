@@ -60,7 +60,7 @@ func (u *UsecaseCalendar) Create(calendar *entity.EntityCalendar) error {
 		return err
 	}
 
-	u.configureSchedules(calendar)
+	u.configureSchedules(*calendar)
 
 	return nil
 }
@@ -78,7 +78,7 @@ func (u *UsecaseCalendar) CreateAllCalendarsJob() error {
 
 	for _, calendar := range calendars {
 		if calendar.Active {
-			u.configureSchedules(&calendar)
+			u.configureSchedules(calendar)
 		}
 	}
 
@@ -92,7 +92,7 @@ func (u *UsecaseCalendar) Update(calendar *entity.EntityCalendar) error {
 		return err
 	}
 
-	u.configureSchedules(calendar)
+	u.configureSchedules(*calendar)
 
 	return nil
 }
@@ -105,12 +105,12 @@ func (u *UsecaseCalendar) Delete(id int) error {
 		return err
 	}
 
-	u.cleanTags(calendar)
+	u.cleanTags(*calendar)
 
 	return u.repo.Delete(id)
 }
 
-func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calendar *entity.EntityCalendar) error {
+func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calendar entity.EntityCalendar) error {
 	err := u.infraCloudProvider.Connect(instance.CloudAccount)
 	if err != nil {
 		log.Println("Error on connect to cloud provider: ", err)
@@ -142,7 +142,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calen
 				u.usecaseLog.Create(&logInstance)
 				return err
 			}
-			u.ScheduleUpdateInstance(instance.CloudAccount, *instance, "running")
+			u.ScheduleUpdateInstance(instance.CloudAccount, instance, "running")
 			u.usecaseLog.Create(&logInstance)
 
 			return nil
@@ -154,7 +154,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calen
 				u.usecaseLog.Create(&logInstance)
 				return err
 			}
-			u.ScheduleUpdateInstance(instance.CloudAccount, *instance, "stopped")
+			u.ScheduleUpdateInstance(instance.CloudAccount, instance, "stopped")
 			u.usecaseLog.Create(&logInstance)
 			return nil
 		}
@@ -164,7 +164,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance *entity.EntityInstance, calen
 	return errors.New("instance or calendar is not active")
 }
 
-func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) error {
+func (u *UsecaseCalendar) ProccessCalendar(calendar entity.EntityCalendar) error {
 	instances, err := u.usecaseInstance.GetAllOFCalendar(calendar.ID)
 	if err != nil {
 		return err
@@ -175,7 +175,7 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar *entity.EntityCalendar) erro
 			continue
 		}
 
-		go u.ProcessInstance(&instance, calendar)
+		go u.ProcessInstance(instance, calendar)
 	}
 
 	return nil
@@ -220,7 +220,7 @@ func (u *UsecaseCalendar) ScheduleUpdateInstance(cloudAccount entity.EntityCloud
 	println("update instance: ", instance.InstanceID, " - ", "counter: ", counter)
 }
 
-func (u *UsecaseCalendar) configureSchedules(calendar *entity.EntityCalendar) {
+func (u *UsecaseCalendar) configureSchedules(calendar entity.EntityCalendar) {
 
 	u.cleanTags(calendar)
 
@@ -243,7 +243,7 @@ func (u *UsecaseCalendar) configureSchedules(calendar *entity.EntityCalendar) {
 	}
 }
 
-func (u *UsecaseCalendar) cleanTags(calendar *entity.EntityCalendar) {
+func (u *UsecaseCalendar) cleanTags(calendar entity.EntityCalendar) {
 
 	var days []int = u.toDaysInt(calendar)
 
@@ -260,7 +260,7 @@ func (u *UsecaseCalendar) cleanTags(calendar *entity.EntityCalendar) {
 	}
 }
 
-func (u *UsecaseCalendar) toDaysInt(calendar *entity.EntityCalendar) (days []int) {
+func (u *UsecaseCalendar) toDaysInt(calendar entity.EntityCalendar) (days []int) {
 
 	if calendar.Sunday {
 		days = append(days, 0)
