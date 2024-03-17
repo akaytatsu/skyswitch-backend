@@ -126,11 +126,12 @@ func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calend
 			Code:     "job execute",
 			Instance: fmt.Sprintf("instance id: %s, instance name: %s", instance.InstanceID, instance.InstanceName),
 			Content: fmt.Sprintf(
-				"instance id: %s, calendar id: %d, calendar name: %s, instance name: %s",
+				"instance id: %s, calendar id: %d, calendar name: %s, instance name: %s, cloud account: %s",
 				instance.InstanceID,
 				calendar.ID,
 				calendar.Name,
-				instance.InstanceName),
+				instance.InstanceName,
+				instance.CloudAccount.Nickname),
 			CreatedAt: u.Now(),
 		}
 
