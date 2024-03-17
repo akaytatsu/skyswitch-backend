@@ -6,6 +6,7 @@ package mocks
 
 import (
 	entity "app/entity"
+	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,11 +36,12 @@ func (m *MockICloudProvider) EXPECT() *MockICloudProviderMockRecorder {
 }
 
 // Connect mocks base method.
-func (m *MockICloudProvider) Connect(arg0 entity.EntityCloudAccount) error {
+func (m *MockICloudProvider) Connect(arg0 entity.EntityCloudAccount) (infrastructure_cloud_provider.ICloudProvider, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Connect", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(infrastructure_cloud_provider.ICloudProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Connect indicates an expected call of Connect.

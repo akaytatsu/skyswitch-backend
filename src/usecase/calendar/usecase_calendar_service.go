@@ -111,7 +111,7 @@ func (u *UsecaseCalendar) Delete(id int) error {
 }
 
 func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calendar entity.EntityCalendar) error {
-	err := u.infraCloudProvider.Connect(instance.CloudAccount)
+	cloudInfraProvider, err := u.infraCloudProvider.Connect(instance.CloudAccount)
 	if err != nil {
 		log.Println("Error on connect to cloud provider: ", err)
 		return err
@@ -136,7 +136,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calend
 		}
 
 		if calendar.TypeAction == "on" {
-			err = u.infraCloudProvider.StartInstance(instance.InstanceID)
+			err = cloudInfraProvider.StartInstance(instance.InstanceID)
 			logInstance.Type = "start"
 			if err != nil {
 				logInstance.Error = err.Error()
@@ -149,7 +149,7 @@ func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calend
 			return nil
 		} else if calendar.TypeAction == "off" {
 			logInstance.Type = "stop"
-			err = u.infraCloudProvider.StopInstance(instance.InstanceID)
+			err = cloudInfraProvider.StopInstance(instance.InstanceID)
 			if err != nil {
 				logInstance.Error = err.Error()
 				u.usecaseLog.Create(&logInstance)

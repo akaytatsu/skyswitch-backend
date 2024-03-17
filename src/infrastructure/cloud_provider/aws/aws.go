@@ -20,17 +20,19 @@ func NewAWSCloudProvider() infrastructure_cloud_provider.ICloudProvider {
 	return &AWSCloudProvider{}
 }
 
-func (a *AWSCloudProvider) Connect(cloudAccount entity.EntityCloudAccount) (err error) {
+func (a *AWSCloudProvider) Connect(cloudAccount entity.EntityCloudAccount) (cloudProvider infrastructure_cloud_provider.ICloudProvider, err error) {
 
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(cloudAccount.Region),
 		Credentials: credentials.NewStaticCredentials(cloudAccount.AccessKeyID, cloudAccount.SecretAccessKey, ""),
 	}))
 
-	a.awsSession = sess
-	a.cloudAccount = cloudAccount
+	cloudProviderReturn := &AWSCloudProvider{
+		awsSession:   sess,
+		cloudAccount: cloudAccount,
+	}
 
-	return nil
+	return cloudProviderReturn, nil
 }
 
 func (a *AWSCloudProvider) GetInstances() (instances []*entity.EntityInstance, err error) {

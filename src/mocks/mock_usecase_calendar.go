@@ -108,7 +108,7 @@ func (mr *MockIUsecaseCalendarMockRecorder) GetAll(arg0 interface{}) *gomock.Cal
 }
 
 // ProccessCalendar mocks base method.
-func (m *MockIUsecaseCalendar) ProccessCalendar(arg0 *entity.EntityCalendar) error {
+func (m *MockIUsecaseCalendar) ProccessCalendar(arg0 entity.EntityCalendar) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ProccessCalendar", arg0)
 	ret0, _ := ret[0].(error)

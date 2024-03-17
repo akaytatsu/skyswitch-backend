@@ -82,13 +82,13 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnAllCloudAccountProvider() (
 
 func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error) {
 
-	err = u.infraCloudProvider.Connect(*cloudAccount)
+	cloudProvier, err := u.infraCloudProvider.Connect(*cloudAccount)
 
 	if err != nil {
 		return nil, err
 	}
 
-	instances, err = u.infraCloudProvider.GetInstances()
+	instances, err = cloudProvier.GetInstances()
 
 	if err != nil {
 		return instances, err
