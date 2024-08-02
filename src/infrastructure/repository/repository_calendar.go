@@ -24,7 +24,7 @@ func (r *RepositoryCalendar) GetFromID(id int) (calendar *entity.EntityCalendar,
 }
 
 func (r *RepositoryCalendar) GetAll(searchParams entity.SearchEntityCalendarParams) (response []entity.EntityCalendar, totalRegisters int64, err error) {
-	offset := (searchParams.Page) * searchParams.PageSize
+	// offset := (searchParams.Page) * searchParams.PageSize
 
 	qry := r.DB.Model(entity.EntityCalendar{})
 
@@ -54,9 +54,18 @@ func (r *RepositoryCalendar) GetAll(searchParams entity.SearchEntityCalendarPara
 	}
 
 	// qry = qry.Order(searchParams.OrderBy + " " + searchParams.SortOrder).
+	page := searchParams.Page
+	pageSize := searchParams.PageSize
+
+	// Calcule o offset corretamente
+	offset := (page - 1) * pageSize
+
+	// Monte a query com o offset correto
 	qry = qry.Order("id desc").
 		Offset(offset).
-		Limit(searchParams.PageSize)
+		Limit(pageSize)
+
+	println(qry.Statement.SQL.String())
 
 	err = qry.Find(&response).Error
 	if err != nil {
