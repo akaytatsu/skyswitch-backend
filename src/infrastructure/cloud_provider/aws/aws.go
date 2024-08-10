@@ -9,6 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/rds"
+
 )
 
 type AWSCloudProvider struct {
@@ -35,6 +37,7 @@ func (a *AWSCloudProvider) Connect(cloudAccount entity.EntityCloudAccount) (clou
 	return cloudProviderReturn, nil
 }
 
+//EC2
 func (a *AWSCloudProvider) GetInstances() (instances []*entity.EntityInstance, err error) {
 	instances = make([]*entity.EntityInstance, 0)
 
@@ -114,6 +117,86 @@ func (a *AWSCloudProvider) StopInstance(instanceID string) (err error) {
 	_, err = svc.StopInstances(input)
 	if err != nil {
 		log.Println("Error on stop instance: ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+// GetDBInstances retorna todas as instâncias de banco de dados no RDS
+func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDBInstance, err error) {
+	dbInstances = make([]*entity.EntityDBInstance, 0)
+
+	// Cria um novo cliente RDS
+	svc := rds.New(a.awsSession)
+
+	// Descreve as instâncias de banco de dados
+	result, err := svc.DescribeDBInstances(nil)
+	if err != nil {
+		log.Println("Error describing DB instances: ", err.Error())
+		return dbInstances, err
+	}
+
+	for _, dbInstance := range result.DBInstances {
+		dbInstances = append(dbInstances, &entity.EntityDBInstance{
+			CloudAccountID:  a.cloudAccount.ID,
+			DBInstanceID:    *dbInstance.DBInstanceIdentifier,
+			DBInstanceClass: *dbInstance.DBInstanceClass,
+			DBInstanceState: *dbInstance.DBInstanceStatus,
+			Endpoint:        *dbInstance.Endpoint.Address,
+			Port:            *dbInstance.Endpoint.Port,
+			Engine:          *dbInstance.Engine,
+			Active:          true,
+		})
+	}
+
+	return dbInstances, nil
+}
+
+// GetDBInstanceByID retorna uma instância específica de banco de dados pelo ID
+func (a *AWSCloudProvider) GetDBInstanceByID(dbInstanceID string) (dbInstance *entity.EntityDBInstance, err error) {
+	dbInstances, err := a.GetDBInstances()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, dbInstance := range dbInstances {
+		if dbInstance.DBInstanceID == dbInstanceID {
+			return dbInstance, nil
+		}
+	}
+
+	return nil, nil
+}
+
+// StartDBInstance inicia uma instância de banco de dados no RDS
+func (a *AWSCloudProvider) StartDBInstance(dbInstanceID string) (err error) {
+	svc := rds.New(a.awsSession)
+
+	input := &rds.StartDBInstanceInput{
+		DBInstanceIdentifier: aws.String(dbInstanceID),
+	}
+
+	_, err = svc.StartDBInstance(input)
+	if err != nil {
+		log.Println("Error starting DB instance: ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+// StopDBInstance para uma instância de banco de dados no RDS
+func (a *AWSCloudProvider) StopDBInstance(dbInstanceID string) (err error) {
+	svc := rds.New(a.awsSession)
+
+	input := &rds.StopDBInstanceInput{
+		DBInstanceIdentifier: aws.String(dbInstanceID),
+	}
+
+	_, err = svc.StopDBInstance(input)
+	if err != nil {
+		log.Println("Error stopping DB instance: ", err.Error())
 		return err
 	}
 
