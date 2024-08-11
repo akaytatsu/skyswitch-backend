@@ -5,6 +5,7 @@ import (
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_instance "app/usecase/instance"
 	"net/http"
 	"strconv"
@@ -233,6 +234,9 @@ func MountCloudAccountHandlers(r *gin.Engine, conn *gorm.DB) {
 			repository.NewInstancePostgres(conn),
 		),
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		usecase_dbinstance.NewService(
+			repository.NewDbinstancePostgres(conn),
+		),
 	))
 
 	group := r.Group("api/cloudaccount")

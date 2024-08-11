@@ -7,6 +7,7 @@ import (
 	"app/infrastructure/repository"
 	usecase_calendar "app/usecase/calendar"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	usecase_log "app/usecase/log"
@@ -44,6 +45,10 @@ func StartJobsCalendars() {
 		repository.NewLogPostgres(conn),
 	)
 
+	var usecaseDbinstance usecase_dbinstance.IUsecaseDbinstance = usecase_dbinstance.NewService(
+		repository.NewDbinstancePostgres(conn),
+	)
+
 	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
 		repository.NewInstancePostgres(conn),
 	)
@@ -52,6 +57,7 @@ func StartJobsCalendars() {
 		repository.NewCloudAccountPostgres(conn),
 		usecaseInstance,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		usecaseDbinstance,
 	)
 
 	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(
@@ -79,10 +85,12 @@ func updateInstances() {
 	var repoInstances usecase_instance.IRepositoryInstance = repository.NewInstancePostgres(db)
 
 	var ucIntances usecase_instance.IUseCaseInstance = usecase_instance.NewService(repoInstances)
+	var ucDbinstance usecase_dbinstance.IUsecaseDbinstance = usecase_dbinstance.NewService(repository.NewDbinstancePostgres(db))
 	var ucCloudProvider usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
 		repoCloudProvider,
 		ucIntances,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		ucDbinstance,
 	)
 
 	cloudAccounts, _, _ := ucCloudProvider.GetAll(entity.SearchEntityCloudAccountParams{
