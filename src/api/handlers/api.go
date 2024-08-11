@@ -5,6 +5,7 @@ import (
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_instance "app/usecase/instance"
 	"net/http"
 	"sort"
@@ -35,6 +36,7 @@ func HomeHandler(c *gin.Context) {
 		repository.NewCloudAccountPostgres(conn),
 		usecase_instance.NewService(repository.NewInstancePostgres(conn)),
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		usecase_dbinstance.NewService(repository.NewDbinstancePostgres(conn)),
 	)
 
 	usecaseCloudAccount.UpdateAllInstancesOnAllCloudAccountProvider()

@@ -60,6 +60,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		repository.NewCloudAccountPostgres(conn),
 		usecaseInstance,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
+		usecaseDbinstance,
 	)
 
 	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(

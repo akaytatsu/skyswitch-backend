@@ -16,8 +16,8 @@ type UseCaseAWSCloudAccount struct {
 }
 
 func NewAWSService(repository IRepositoryCloudAccount, usecaseInstances usecase_instance.IUseCaseInstance,
-	infraCloudProvider infrastructure_cloud_provider.ICloudProvider) *UseCaseAWSCloudAccount {
-	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances, infraCloudProvider: infraCloudProvider}
+	infraCloudProvider infrastructure_cloud_provider.ICloudProvider, usecaseDbinstances usecase_dbinstance.IUsecaseDbinstance) *UseCaseAWSCloudAccount {
+	return &UseCaseAWSCloudAccount{repo: repository, useCaseInstances: usecaseInstances, infraCloudProvider: infraCloudProvider, UsecaseDbinstance: usecaseDbinstances}
 }
 
 func (u *UseCaseAWSCloudAccount) GetAll(searchParams entity.SearchEntityCloudAccountParams) (response []entity.EntityCloudAccount, totalRegisters int64, err error) {
