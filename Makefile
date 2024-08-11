@@ -102,7 +102,7 @@ update_generator:
 	npm update -g generator-go-clean-architecture-crud
 
 generator_crud:
-	yo go-clean-architecture-crud:go-crud
+	npx vert-cli@latest --template golang-crud
 
 restore_database: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec db psql -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c "drop schema public cascade; create schema public;"

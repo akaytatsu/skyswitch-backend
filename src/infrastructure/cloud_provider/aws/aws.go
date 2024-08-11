@@ -10,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/rds"
-
 )
 
 type AWSCloudProvider struct {
@@ -37,7 +36,7 @@ func (a *AWSCloudProvider) Connect(cloudAccount entity.EntityCloudAccount) (clou
 	return cloudProviderReturn, nil
 }
 
-//EC2
+// EC2
 func (a *AWSCloudProvider) GetInstances() (instances []*entity.EntityInstance, err error) {
 	instances = make([]*entity.EntityInstance, 0)
 
@@ -139,14 +138,16 @@ func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDBInsta
 
 	for _, dbInstance := range result.DBInstances {
 		dbInstances = append(dbInstances, &entity.EntityDBInstance{
-			CloudAccountID:  a.cloudAccount.ID,
-			DBInstanceID:    *dbInstance.DBInstanceIdentifier,
-			DBInstanceClass: *dbInstance.DBInstanceClass,
-			DBInstanceState: *dbInstance.DBInstanceStatus,
-			Endpoint:        *dbInstance.Endpoint.Address,
-			Port:            *dbInstance.Endpoint.Port,
-			Engine:          *dbInstance.Engine,
-			Active:          true,
+			CloudAccountID:   a.cloudAccount.ID,
+			DBInstanceID:     *dbInstance.DBInstanceIdentifier,
+			DBInstanceName:   *dbInstance.DBInstanceIdentifier,
+			DBInstanceRegion: a.cloudAccount.Region,
+			DBInstanceClass:  *dbInstance.DBInstanceClass,
+			DBInstanceState:  *dbInstance.DBInstanceStatus,
+			Endpoint:         *dbInstance.Endpoint.Address,
+			Port:             *dbInstance.Endpoint.Port,
+			Engine:           *dbInstance.Engine,
+			Active:           true,
 		})
 	}
 
