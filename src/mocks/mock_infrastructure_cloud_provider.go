@@ -50,6 +50,36 @@ func (mr *MockICloudProviderMockRecorder) Connect(arg0 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockICloudProvider)(nil).Connect), arg0)
 }
 
+// GetDBInstanceByID mocks base method.
+func (m *MockICloudProvider) GetDBInstanceByID(arg0 string) (*entity.EntityDbinstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDBInstanceByID", arg0)
+	ret0, _ := ret[0].(*entity.EntityDbinstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDBInstanceByID indicates an expected call of GetDBInstanceByID.
+func (mr *MockICloudProviderMockRecorder) GetDBInstanceByID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDBInstanceByID", reflect.TypeOf((*MockICloudProvider)(nil).GetDBInstanceByID), arg0)
+}
+
+// GetDBInstances mocks base method.
+func (m *MockICloudProvider) GetDBInstances() ([]*entity.EntityDbinstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDBInstances")
+	ret0, _ := ret[0].([]*entity.EntityDbinstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDBInstances indicates an expected call of GetDBInstances.
+func (mr *MockICloudProviderMockRecorder) GetDBInstances() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDBInstances", reflect.TypeOf((*MockICloudProvider)(nil).GetDBInstances))
+}
+
 // GetInstanceByID mocks base method.
 func (m *MockICloudProvider) GetInstanceByID(arg0 string) (*entity.EntityInstance, error) {
 	m.ctrl.T.Helper()
@@ -80,6 +110,20 @@ func (mr *MockICloudProviderMockRecorder) GetInstances() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstances", reflect.TypeOf((*MockICloudProvider)(nil).GetInstances))
 }
 
+// StartDBInstance mocks base method.
+func (m *MockICloudProvider) StartDBInstance(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StartDBInstance", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StartDBInstance indicates an expected call of StartDBInstance.
+func (mr *MockICloudProviderMockRecorder) StartDBInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartDBInstance", reflect.TypeOf((*MockICloudProvider)(nil).StartDBInstance), arg0)
+}
+
 // StartInstance mocks base method.
 func (m *MockICloudProvider) StartInstance(arg0 string) error {
 	m.ctrl.T.Helper()
@@ -92,6 +136,20 @@ func (m *MockICloudProvider) StartInstance(arg0 string) error {
 func (mr *MockICloudProviderMockRecorder) StartInstance(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartInstance", reflect.TypeOf((*MockICloudProvider)(nil).StartInstance), arg0)
+}
+
+// StopDBInstance mocks base method.
+func (m *MockICloudProvider) StopDBInstance(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StopDBInstance", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StopDBInstance indicates an expected call of StopDBInstance.
+func (mr *MockICloudProviderMockRecorder) StopDBInstance(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopDBInstance", reflect.TypeOf((*MockICloudProvider)(nil).StopDBInstance), arg0)
 }
 
 // StopInstance mocks base method.

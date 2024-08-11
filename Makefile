@@ -67,7 +67,6 @@ auto_install: show_env
 
 generate: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} exec app go generate ./...
-	sudo chown -R "${USER}:${USER}" ./
 
 logger: show_env
 	docker-compose ${DOCKER_COMPOSE_FILE} logs -f --tail 200 ${ARGS}

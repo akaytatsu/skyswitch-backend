@@ -108,6 +108,51 @@ func (mr *MockIUsecaseCloudAccountMockRecorder) GetByID(arg0 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).GetByID), arg0)
 }
 
+// UpdateAllDBInstancesOnAllCloudAccountProvider mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllDBInstancesOnAllCloudAccountProvider() ([]*entity.EntityDbinstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllDBInstancesOnAllCloudAccountProvider")
+	ret0, _ := ret[0].([]*entity.EntityDbinstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllDBInstancesOnAllCloudAccountProvider indicates an expected call of UpdateAllDBInstancesOnAllCloudAccountProvider.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllDBInstancesOnAllCloudAccountProvider() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllDBInstancesOnAllCloudAccountProvider", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllDBInstancesOnAllCloudAccountProvider))
+}
+
+// UpdateAllDBInstancesOnCloudAccountProvider mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllDBInstancesOnCloudAccountProvider(arg0 *entity.EntityCloudAccount) ([]*entity.EntityDbinstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllDBInstancesOnCloudAccountProvider", arg0)
+	ret0, _ := ret[0].([]*entity.EntityDbinstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllDBInstancesOnCloudAccountProvider indicates an expected call of UpdateAllDBInstancesOnCloudAccountProvider.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllDBInstancesOnCloudAccountProvider(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllDBInstancesOnCloudAccountProvider", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllDBInstancesOnCloudAccountProvider), arg0)
+}
+
+// UpdateAllDBInstancesOnCloudAccountProviderFromID mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllDBInstancesOnCloudAccountProviderFromID(arg0 int) ([]*entity.EntityDbinstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllDBInstancesOnCloudAccountProviderFromID", arg0)
+	ret0, _ := ret[0].([]*entity.EntityDbinstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllDBInstancesOnCloudAccountProviderFromID indicates an expected call of UpdateAllDBInstancesOnCloudAccountProviderFromID.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllDBInstancesOnCloudAccountProviderFromID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllDBInstancesOnCloudAccountProviderFromID", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllDBInstancesOnCloudAccountProviderFromID), arg0)
+}
+
 // UpdateAllInstancesOnAllCloudAccountProvider mocks base method.
 func (m *MockIUsecaseCloudAccount) UpdateAllInstancesOnAllCloudAccountProvider() ([]*entity.EntityInstance, error) {
 	m.ctrl.T.Helper()

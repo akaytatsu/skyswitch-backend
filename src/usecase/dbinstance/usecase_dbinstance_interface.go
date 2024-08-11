@@ -16,7 +16,7 @@ type IRepositoryDbinstance interface {
 
 //go:generate mockgen -destination=../../mocks/mock_usecase_dbinstance.go -package=mocks app/usecase/dbinstance IUsecaseDbinstance
 type IUsecaseDbinstance interface {
-	Get(id int64) (*entity.EntityDbinstance, error)
+	Get(id int) (*entity.EntityDbinstance, error)
 	GetAll(searchParams entity.SearchEntityDbinstanceParams) (response []entity.EntityDbinstance, totalRegisters int64, err error)
 	Create(*entity.EntityDbinstance) error
 	Update(*entity.EntityDbinstance) error
