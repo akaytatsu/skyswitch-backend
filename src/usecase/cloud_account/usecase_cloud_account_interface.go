@@ -23,4 +23,7 @@ type IUsecaseCloudAccount interface {
 	UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error)
 	UpdateAllInstancesOnCloudAccountProviderFromID(id int) (instances []*entity.EntityInstance, err error)
 	UpdateAllInstancesOnAllCloudAccountProvider() (instances []*entity.EntityInstance, err error)
+	UpdateAllDBInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (dbInstances []*entity.EntityDbinstance, err error)
+	UpdateAllDBInstancesOnCloudAccountProviderFromID(id int) (dbInstances []*entity.EntityDbinstance, err error)
+	UpdateAllDBInstancesOnAllCloudAccountProvider() (dbInstances []*entity.EntityDbinstance, err error)
 }

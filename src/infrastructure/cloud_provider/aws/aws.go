@@ -123,8 +123,8 @@ func (a *AWSCloudProvider) StopInstance(instanceID string) (err error) {
 }
 
 // GetDBInstances retorna todas as instâncias de banco de dados no RDS
-func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDBInstance, err error) {
-	dbInstances = make([]*entity.EntityDBInstance, 0)
+func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDbinstance, err error) {
+	dbInstances = make([]*entity.EntityDbinstance, 0)
 
 	// Cria um novo cliente RDS
 	svc := rds.New(a.awsSession)
@@ -137,7 +137,7 @@ func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDBInsta
 	}
 
 	for _, dbInstance := range result.DBInstances {
-		dbInstances = append(dbInstances, &entity.EntityDBInstance{
+		dbInstances = append(dbInstances, &entity.EntityDbinstance{
 			CloudAccountID:   a.cloudAccount.ID,
 			DBInstanceID:     *dbInstance.DBInstanceIdentifier,
 			DBInstanceName:   *dbInstance.DBInstanceIdentifier,
@@ -155,7 +155,7 @@ func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDBInsta
 }
 
 // GetDBInstanceByID retorna uma instância específica de banco de dados pelo ID
-func (a *AWSCloudProvider) GetDBInstanceByID(dbInstanceID string) (dbInstance *entity.EntityDBInstance, err error) {
+func (a *AWSCloudProvider) GetDBInstanceByID(dbInstanceID string) (dbInstance *entity.EntityDbinstance, err error) {
 	dbInstances, err := a.GetDBInstances()
 	if err != nil {
 		return nil, err

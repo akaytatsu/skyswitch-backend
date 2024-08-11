@@ -3,6 +3,7 @@ package usecase_cloud_account
 import (
 	"app/entity"
 	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
+	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_instance "app/usecase/instance"
 	"log"
 )
@@ -10,6 +11,7 @@ import (
 type UseCaseAWSCloudAccount struct {
 	repo               IRepositoryCloudAccount
 	useCaseInstances   usecase_instance.IUseCaseInstance
+	UsecaseDbinstance  usecase_dbinstance.IUsecaseDbinstance
 	infraCloudProvider infrastructure_cloud_provider.ICloudProvider
 }
 
@@ -117,4 +119,59 @@ func (u *UseCaseAWSCloudAccount) UpdateAllInstancesOnCloudAccountProviderFromID(
 	}
 
 	return u.UpdateAllInstancesOnCloudAccountProvider(cloudAccount)
+}
+
+func (u *UseCaseAWSCloudAccount) UpdateAllDBInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (dbInstances []*entity.EntityDbinstance, err error) {
+	cloudProvier, err := u.infraCloudProvider.Connect(*cloudAccount)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dbinstances, err := cloudProvier.GetDBInstances()
+
+	if err != nil {
+		return dbinstances, err
+	}
+
+	for _, dbinstance := range dbinstances {
+		err = u.UsecaseDbinstance.CreateOrUpdateDbInstance(dbinstance, false)
+
+		if err != nil {
+			log.Println("Error creating or updating db instance: ", err)
+		}
+	}
+
+	return dbinstances, nil
+}
+
+func (u *UseCaseAWSCloudAccount) UpdateAllDBInstancesOnCloudAccountProviderFromID(id int) (dbInstances []*entity.EntityDbinstance, err error) {
+	cloudAccount, err := u.GetByID(int64(id))
+	if err != nil {
+		return nil, err
+	}
+
+	return u.UpdateAllDBInstancesOnCloudAccountProvider(cloudAccount)
+}
+
+func (u *UseCaseAWSCloudAccount) UpdateAllDBInstancesOnAllCloudAccountProvider() (dbInstances []*entity.EntityDbinstance, err error) {
+
+	params := entity.SearchEntityCloudAccountParams{
+		Page:     0,
+		PageSize: 10000,
+	}
+
+	cloudAccounts, _, err := u.repo.GetAll(params)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cloudAccount := range cloudAccounts {
+		dbInstances, err = u.UpdateAllDBInstancesOnCloudAccountProvider(&cloudAccount)
+		if err != nil {
+			log.Println("Error updating all db instances on cloud account provider: ", err)
+		}
+	}
+
+	return dbInstances, nil
 }

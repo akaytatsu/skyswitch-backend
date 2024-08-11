@@ -13,8 +13,8 @@ type ICloudProvider interface {
 	StopInstance(instanceID string) (err error)
 
 	//RDS
-	GetDBInstances() (dbInstances []*entity.EntityDBInstance, err error)
-	GetDBInstanceByID(string) (dbInstance *entity.EntityDBInstance, err error)
+	GetDBInstances() (dbInstances []*entity.EntityDbinstance, err error)
+	GetDBInstanceByID(string) (dbInstance *entity.EntityDbinstance, err error)
 	StartDBInstance(dbInstanceID string) (err error)
 	StopDBInstance(dbInstanceID string) (err error)
 }

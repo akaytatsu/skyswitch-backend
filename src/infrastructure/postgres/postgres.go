@@ -24,6 +24,7 @@ func Migrations() {
 	db := Connect()
 
 	db.AutoMigrate(&entity.EntityUser{})
+	db.AutoMigrate(&entity.EntityDbinstance{})
 	db.AutoMigrate(&entity.EntityCloudAccount{})
 	db.AutoMigrate(&entity.EntityInstance{})
 	db.AutoMigrate(&entity.EntityHoliday{})

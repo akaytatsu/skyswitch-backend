@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"app/api/handlers"
+	usecase_carros "app/usecase/carros"
 	"app/config"
 	"app/cron"
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
@@ -43,6 +44,12 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+
+	var usecaseDbinstance usecase_dbinstance.IUsecaseDbinstance = usecase_dbinstance.NewService(
+		repository.NewDbinstancePostgres(conn),
+	)
+
+
 	var usecaseLog usecase_log.IUsecaseLog = usecase_log.NewService(
 		repository.NewLogPostgres(conn),
 	)
@@ -77,6 +84,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 
 	handlers.MountCloudAccountHandlers(r, conn)
 	handlers.MountUsersHandlers(r, conn)
+	handlers.MountDbinstanceRoutes(r, conn, usecaseDbinstance)
 	handlers.MountInstancesRoutes(r, conn)
 	handlers.MountCalendarRoutes(r, conn, usecaseCalendar)
 	handlers.MountJobRoutes(r, conn, usecaseJob)
