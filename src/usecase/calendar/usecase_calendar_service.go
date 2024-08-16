@@ -4,6 +4,7 @@ import (
 	"app/entity"
 	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
 	usecase_cloud_account "app/usecase/cloud_account"
+	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_holiday "app/usecase/holiday"
 	usecase_instance "app/usecase/instance"
 	usecase_log "app/usecase/log"
@@ -20,6 +21,7 @@ type UsecaseCalendar struct {
 	repo                 IRepositoryCalendar
 	scheduler            *gocron.Scheduler
 	usecaseInstance      usecase_instance.IUseCaseInstance
+	usecaseDbInstance    usecase_dbinstance.IUsecaseDbinstance
 	infraCloudProvider   infrastructure_cloud_provider.ICloudProvider
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount
 	usecaseHoliday       usecase_holiday.IUsecaseHoliday
@@ -32,7 +34,7 @@ func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 	infraCloudProvider infrastructure_cloud_provider.ICloudProvider,
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount,
 	usecaseHoliday usecase_holiday.IUsecaseHoliday,
-	usecaseLog usecase_log.IUsecaseLog) *UsecaseCalendar {
+	usecaseLog usecase_log.IUsecaseLog, usecaseDbInstance usecase_dbinstance.IUsecaseDbinstance) *UsecaseCalendar {
 	return &UsecaseCalendar{
 		repo:                 repository,
 		scheduler:            scheduler,
@@ -42,6 +44,7 @@ func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 		usecaseHoliday:       usecaseHoliday,
 		usecaseLog:           usecaseLog,
 		Now:                  time.Now,
+		usecaseDbInstance:    usecaseDbInstance,
 	}
 }
 
@@ -165,7 +168,72 @@ func (u *UsecaseCalendar) ProcessInstance(instance entity.EntityInstance, calend
 	return errors.New("instance or calendar is not active")
 }
 
+func (u *UsecaseCalendar) ProcessDbInstance(dbInstance entity.EntityDbinstance, calendar entity.EntityCalendar) error {
+	cloudInfraProvider, err := u.infraCloudProvider.Connect(dbInstance.CloudAccount)
+
+	if err != nil {
+		log.Println("Error on connect to cloud provider: ", err)
+		return err
+	}
+
+	if dbInstance.Active && calendar.Active {
+		if check, _ := u.usecaseHoliday.IsHoliday(u.Now()); check && !calendar.ValidHoliday {
+			return errors.New("today is holiday")
+		}
+
+		logInstance := entity.EntityLog{
+			Code:     "job execute",
+			Instance: fmt.Sprintf("db instance id: %s, db instance name: %s", dbInstance.DBInstanceID, dbInstance.DBInstanceName),
+			Content: fmt.Sprintf(
+				"db instance id: %s, calendar id: %d, calendar name: %s, db instance name: %s, cloud account: %s",
+				dbInstance.DBInstanceID,
+				calendar.ID,
+				calendar.Name,
+				dbInstance.DBInstanceName,
+				dbInstance.CloudAccount.Nickname),
+			CreatedAt: u.Now(),
+		}
+
+		if calendar.TypeAction == "on" {
+			err = cloudInfraProvider.StartDBInstance(dbInstance.DBInstanceID)
+			logInstance.Type = "start"
+			if err != nil {
+				logInstance.Error = err.Error()
+				u.usecaseLog.Create(&logInstance)
+				return err
+			}
+			u.ScheduleUpdateDbInstance(dbInstance.CloudAccount, dbInstance, "running")
+			u.usecaseLog.Create(&logInstance)
+
+			return nil
+		}
+
+		if calendar.TypeAction == "off" {
+			logInstance.Type = "stop"
+			err = cloudInfraProvider.StopDBInstance(dbInstance.DBInstanceID)
+			if err != nil {
+				logInstance.Error = err.Error()
+				u.usecaseLog.Create(&logInstance)
+				return err
+			}
+			u.ScheduleUpdateDbInstance(dbInstance.CloudAccount, dbInstance, "stopped")
+			u.usecaseLog.Create(&logInstance)
+			return nil
+		}
+
+	}
+
+	return errors.New("instance or calendar is not active")
+}
+
 func (u *UsecaseCalendar) ProccessCalendar(calendar entity.EntityCalendar) error {
+	u.ProccessInstanceCalendar(calendar)
+	u.ProccessDbInstanceCalendar(calendar)
+
+	return nil
+}
+
+func (u *UsecaseCalendar) ProccessInstanceCalendar(calendar entity.EntityCalendar) error {
 	instances, err := u.usecaseInstance.GetAllOFCalendar(calendar.ID)
 	if err != nil {
 		return err
@@ -180,6 +248,62 @@ func (u *UsecaseCalendar) ProccessCalendar(calendar entity.EntityCalendar) error
 	}
 
 	return nil
+}
+
+func (u *UsecaseCalendar) ProccessDbInstanceCalendar(calendar entity.EntityCalendar) error {
+	dbInstances, err := u.usecaseDbInstance.GetAllOFCalendar(calendar.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, dbInstance := range dbInstances {
+		if !dbInstance.Active {
+			continue
+		}
+
+		go u.ProcessDbInstance(dbInstance, calendar)
+	}
+
+	return nil
+}
+
+func (u *UsecaseCalendar) ScheduleUpdateDbInstance(cloudAccount entity.EntityCloudAccount,
+	dbInstance entity.EntityDbinstance, finishStatus string) {
+
+	var counter int = 0
+
+	for {
+		dbInstances, _ := u.usecaseCloudAccoount.UpdateAllDBInstancesOnCloudAccountProvider(&cloudAccount)
+
+		var cloudDbInstance *entity.EntityDbinstance
+
+		for _, i := range dbInstances {
+			if i.DBInstanceID == dbInstance.DBInstanceID {
+				cloudDbInstance = i
+				break
+			}
+		}
+
+		if cloudDbInstance == nil {
+			break
+		}
+
+		if cloudDbInstance.DBInstanceState == "terminated" {
+			break
+		}
+
+		if cloudDbInstance.DBInstanceState == finishStatus {
+			break
+		}
+		counter++
+
+		if counter > 15 {
+			break
+		}
+		time.Sleep(30 * time.Second)
+	}
+
+	println("update db instance: ", dbInstance.DBInstanceID, " - ", "counter: ", counter)
 }
 
 func (u *UsecaseCalendar) ScheduleUpdateInstance(cloudAccount entity.EntityCloudAccount,

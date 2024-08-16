@@ -72,6 +72,7 @@ func StartJobsCalendars() {
 		usecaseCloudAccount,
 		usecaseHoliday,
 		usecaseLog,
+		usecaseDbinstance,
 	)
 
 	usecaseCalendar.CreateAllCalendarsJob()
@@ -101,6 +102,7 @@ func updateInstances() {
 	for _, cloudAccount := range cloudAccounts {
 		if cloudAccount.Active {
 			ucCloudProvider.UpdateAllInstancesOnCloudAccountProvider(&cloudAccount)
+			ucCloudProvider.UpdateAllDBInstancesOnCloudAccountProvider(&cloudAccount)
 
 		}
 	}

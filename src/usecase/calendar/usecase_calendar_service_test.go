@@ -30,6 +30,7 @@ func configureMocks(ctrl *gomock.Controller) (*MockConfigure, *usecase_calendar.
 		mockUseCaseCloudAccount: mocks.NewMockIUsecaseCloudAccount(ctrl),
 		mockUsecaseHoliday:      mocks.NewMockIUsecaseHoliday(ctrl),
 		mockUsecaseLog:          mocks.NewMockIUsecaseLog(ctrl),
+		mockDbInstance:          mocks.NewMockIUsecaseDbinstance(ctrl),
 	}
 
 	schedule := gocron.NewScheduler(time.UTC)
@@ -42,6 +43,7 @@ func configureMocks(ctrl *gomock.Controller) (*MockConfigure, *usecase_calendar.
 		mocks.mockUseCaseCloudAccount,
 		mocks.mockUsecaseHoliday,
 		mocks.mockUsecaseLog,
+		mockDbInstance,
 	)
 
 	return mocks, u

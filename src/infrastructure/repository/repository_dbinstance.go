@@ -26,7 +26,7 @@ func (r *RepositoryDbinstance) GetFromID(id int) (dbinstance *entity.EntityDbins
 func (r *RepositoryDbinstance) GetAll(searchParams entity.SearchEntityDbinstanceParams) (response []entity.EntityDbinstance, totalRegisters int64, err error) {
 	offset := (searchParams.Page) * searchParams.PageSize
 
-	qry := r.DB.Model(entity.EntityDbinstance{})
+	qry := r.DB.Model(entity.EntityDbinstance{}).Preload("Calendars").Preload("CloudAccount")
 
 	if gin.IsDebugging() {
 		qry = qry.Debug()

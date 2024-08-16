@@ -53,6 +53,22 @@ func (h *DbinstanceHandler) GetAllDbinstance(c *gin.Context) {
 	orderBy, sortOrder := getOrderByParams(c, "updated_at")
 	pagina, tamanhoPagina := getPaginationParams(c)
 
+	OnlyStatusMonitor := c.Query("only_status_monitor")
+
+	if OnlyStatusMonitor == "" {
+		OnlyStatusMonitor = "true"
+	}
+
+	OnlyActive := c.Query("only_active")
+	if OnlyActive == "" {
+		OnlyActive = "true"
+	}
+
+	ExcludeBlankName := c.Query("exclude_blank_name")
+	if ExcludeBlankName == "" {
+		ExcludeBlankName = "true"
+	}
+
 	params := entity.SearchEntityDbinstanceParams{
 		OrderBy:   orderBy,
 		SortOrder: sortOrder,
@@ -62,8 +78,7 @@ func (h *DbinstanceHandler) GetAllDbinstance(c *gin.Context) {
 		CreatedAt: c.Query("created_at"),
 	}
 
-	dbinstance, totalRegs, err := h.UsecaseDbinstance.GetAll(params)
-
+	instances, totalRegs, err := h.UsecaseDbinstance.GetAll(params)
 	if exception := handleError(c, err); exception {
 		return
 	}
@@ -72,7 +87,7 @@ func (h *DbinstanceHandler) GetAllDbinstance(c *gin.Context) {
 		TotalPages:     getTotalPaginas(totalRegs, tamanhoPagina),
 		Page:           pagina,
 		TotalRegisters: int(totalRegs),
-		Registers:      dbinstance,
+		Registers:      instances,
 	}
 
 	c.JSON(http.StatusOK, paginationResponse)
@@ -155,7 +170,7 @@ func (h *DbinstanceHandler) DeleteDbinstance(c *gin.Context) {
 func MountDbinstanceRoutes(gin *gin.Engine, conn *gorm.DB, usecase usecase_dbinstance.IUsecaseDbinstance) {
 	handler := NewDbinstanceHandler(usecase)
 
-	group := gin.Group("/api/dbinstance")
+	group := gin.Group("/api/dbinstances")
 
 	group.GET("/:id", handler.GetDbinstance)
 	group.GET("/", handler.GetAllDbinstance)
