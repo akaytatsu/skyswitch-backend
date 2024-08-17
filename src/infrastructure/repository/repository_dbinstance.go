@@ -100,8 +100,8 @@ func (r *RepositoryDbinstance) Delete(id int) (err error) {
 func (u *RepositoryDbinstance) FromCalendar(calendarID int) (response []entity.EntityDbinstance, err error) {
 
 	err = u.DB.Debug().Model(&entity.EntityDbinstance{}).Preload("CloudAccount").
-		Joins("JOIN entity_instance_calendars ON entity_instance_calendars.entity_dbinstance_id = entity_dbinstances.id").
-		Where("entity_instance_calendars.entity_calendar_id = ?", calendarID).
+		Joins("JOIN entity_dbinstance_calendars ON entity_dbinstance_calendars.entity_dbinstance_id = entity_dbinstances.id").
+		Where("entity_dbinstance_calendars.entity_calendar_id = ?", calendarID).
 		Find(&response).Error
 
 	return response, err
