@@ -227,8 +227,8 @@ func (u *UsecaseCalendar) ProcessDbInstance(dbInstance entity.EntityDbinstance, 
 }
 
 func (u *UsecaseCalendar) ProccessCalendar(calendar entity.EntityCalendar) error {
-	u.ProccessInstanceCalendar(calendar)
-	u.ProccessDbInstanceCalendar(calendar)
+	go u.ProccessInstanceCalendar(calendar)
+	go u.ProccessDbInstanceCalendar(calendar)
 
 	return nil
 }
