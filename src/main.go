@@ -35,5 +35,3 @@ func main() {
 
 	api.StartWebServer()
 }
-
-//
