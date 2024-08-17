@@ -10,7 +10,7 @@ type EntityDbinstance struct {
 	ID               int                `json:"id" gorm:"primaryKey"`
 	CloudAccountID   int64              `gorm:"column:cloud_account_id" json:"cloud_account_id"`
 	CloudAccount     EntityCloudAccount `gorm:"foreignKey:CloudAccountID;references:ID" json:"cloud_account"`
-	Calendars        []EntityCalendar   `gorm:"many2many:entity_instance_calendars" json:"calendars"`
+	Calendars        []EntityCalendar   `gorm:"many2many:entity_dbinstance_calendars" json:"calendars"`
 	DBInstanceID     string             `gorm:"column:db_instance_id" json:"db_instance_id"`
 	DBInstanceType   string             `gorm:"column:db_instance_type" json:"db_instance_type"`
 	DBInstanceName   string             `gorm:"column:db_instance_name" json:"db_instance_name"`
