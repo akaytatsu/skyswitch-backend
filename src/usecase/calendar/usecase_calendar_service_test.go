@@ -20,6 +20,8 @@ type MockConfigure struct {
 	mockUseCaseCloudAccount *mocks.MockIUsecaseCloudAccount
 	mockUsecaseHoliday      *mocks.MockIUsecaseHoliday
 	mockUsecaseLog          *mocks.MockIUsecaseLog
+	mockDbInstance          *mocks.MockIUsecaseDbinstance
+	mockAutoScallingGroup   *mocks.MockIUsecaseAutoScalingGroup
 }
 
 func configureMocks(ctrl *gomock.Controller) (*MockConfigure, *usecase_calendar.UsecaseCalendar) {
@@ -31,6 +33,7 @@ func configureMocks(ctrl *gomock.Controller) (*MockConfigure, *usecase_calendar.
 		mockUsecaseHoliday:      mocks.NewMockIUsecaseHoliday(ctrl),
 		mockUsecaseLog:          mocks.NewMockIUsecaseLog(ctrl),
 		mockDbInstance:          mocks.NewMockIUsecaseDbinstance(ctrl),
+		mockAutoScallingGroup:   mocks.NewMockIUsecaseAutoScalingGroup(ctrl),
 	}
 
 	schedule := gocron.NewScheduler(time.UTC)
@@ -43,7 +46,8 @@ func configureMocks(ctrl *gomock.Controller) (*MockConfigure, *usecase_calendar.
 		mocks.mockUseCaseCloudAccount,
 		mocks.mockUsecaseHoliday,
 		mocks.mockUsecaseLog,
-		mockDbInstance,
+		mocks.mockDbInstance,
+		mocks.mockAutoScallingGroup,
 	)
 
 	return mocks, u

@@ -108,6 +108,51 @@ func (mr *MockIUsecaseCloudAccountMockRecorder) GetByID(arg0 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).GetByID), arg0)
 }
 
+// UpdateAllAutoScalingGroupsOnAllCloudAccountProvider mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllAutoScalingGroupsOnAllCloudAccountProvider() ([]*entity.EntityAutoScalingGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllAutoScalingGroupsOnAllCloudAccountProvider")
+	ret0, _ := ret[0].([]*entity.EntityAutoScalingGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllAutoScalingGroupsOnAllCloudAccountProvider indicates an expected call of UpdateAllAutoScalingGroupsOnAllCloudAccountProvider.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllAutoScalingGroupsOnAllCloudAccountProvider() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllAutoScalingGroupsOnAllCloudAccountProvider", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllAutoScalingGroupsOnAllCloudAccountProvider))
+}
+
+// UpdateAllAutoScalingGroupsOnCloudAccountProvider mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllAutoScalingGroupsOnCloudAccountProvider(arg0 *entity.EntityCloudAccount) ([]*entity.EntityAutoScalingGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllAutoScalingGroupsOnCloudAccountProvider", arg0)
+	ret0, _ := ret[0].([]*entity.EntityAutoScalingGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllAutoScalingGroupsOnCloudAccountProvider indicates an expected call of UpdateAllAutoScalingGroupsOnCloudAccountProvider.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllAutoScalingGroupsOnCloudAccountProvider(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllAutoScalingGroupsOnCloudAccountProvider", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllAutoScalingGroupsOnCloudAccountProvider), arg0)
+}
+
+// UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID mocks base method.
+func (m *MockIUsecaseCloudAccount) UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID(arg0 int) ([]*entity.EntityAutoScalingGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID", arg0)
+	ret0, _ := ret[0].([]*entity.EntityAutoScalingGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID indicates an expected call of UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID.
+func (mr *MockIUsecaseCloudAccountMockRecorder) UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID", reflect.TypeOf((*MockIUsecaseCloudAccount)(nil).UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID), arg0)
+}
+
 // UpdateAllDBInstancesOnAllCloudAccountProvider mocks base method.
 func (m *MockIUsecaseCloudAccount) UpdateAllDBInstancesOnAllCloudAccountProvider() ([]*entity.EntityDbinstance, error) {
 	m.ctrl.T.Helper()
