@@ -30,6 +30,7 @@ func Migrations() {
 	db.AutoMigrate(&entity.EntityHoliday{})
 	db.AutoMigrate(&entity.EntityCalendar{})
 	db.AutoMigrate(&entity.EntityLog{})
+	db.AutoMigrate(&entity.EntityAutoScalingGroup{})
 }
 
 func conn() *gorm.DB {

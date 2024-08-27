@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/autoscaling"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/rds"
 )
@@ -36,7 +37,11 @@ func (a *AWSCloudProvider) Connect(cloudAccount entity.EntityCloudAccount) (clou
 	return cloudProviderReturn, nil
 }
 
-// EC2
+/*
+**********
+/**** EC2
+**********
+*/
 func (a *AWSCloudProvider) GetInstances() (instances []*entity.EntityInstance, err error) {
 	instances = make([]*entity.EntityInstance, 0)
 
@@ -122,6 +127,9 @@ func (a *AWSCloudProvider) StopInstance(instanceID string) (err error) {
 	return nil
 }
 
+/***********
+/**** RDS
+***********/
 // GetDBInstances retorna todas as instâncias de banco de dados no RDS
 func (a *AWSCloudProvider) GetDBInstances() (dbInstances []*entity.EntityDbinstance, err error) {
 	dbInstances = make([]*entity.EntityDbinstance, 0)
@@ -198,6 +206,116 @@ func (a *AWSCloudProvider) StopDBInstance(dbInstanceID string) (err error) {
 	_, err = svc.StopDBInstance(input)
 	if err != nil {
 		log.Println("Error stopping DB instance: ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+/*
+**********
+/**** AutoScallingGroups
+**********
+*/
+func (a *AWSCloudProvider) GetAutoScalingGroups() (autoScalingGroups []*entity.EntityAutoScalingGroup, err error) {
+	autoScalingGroups = make([]*entity.EntityAutoScalingGroup, 0)
+
+	svc := autoscaling.New(a.awsSession)
+
+	result, err := svc.DescribeAutoScalingGroups(nil)
+
+	if err != nil {
+		log.Println("Error describing AutoScalingGroups: ", err.Error())
+		return autoScalingGroups, err
+	}
+
+	for _, asg := range result.AutoScalingGroups {
+
+		minSize := int(*asg.MinSize)
+		maxSize := int(*asg.MaxSize)
+		desiredCapacity := int(*asg.DesiredCapacity)
+
+		// autoScalingGroups = append(autoScalingGroups, &entity.EntityAutoScalingGroup{
+		// 	CloudAccountID:       a.cloudAccount.ID,
+		// 	AutoScalingGroupID:   *asg.AutoScalingGroupName,
+		// 	AutoScalingGroupName: *asg.AutoScalingGroupName,
+		// 	MinSize:              int(*asg.MinSize),
+		// 	MaxSize:              int(*asg.MaxSize),
+		// 	DesiredCapacity:      int(*asg.DesiredCapacity),
+		// 	TotalInstances:       len(asg.Instances),
+		// })
+
+		aux := &entity.EntityAutoScalingGroup{
+			CloudAccountID:       a.cloudAccount.ID,
+			AutoScalingGroupID:   *asg.AutoScalingGroupName,
+			AutoScalingGroupName: *asg.AutoScalingGroupName,
+			TotalInstances:       len(asg.Instances),
+		}
+
+		if minSize != 0 {
+			aux.MinSize = minSize
+		}
+
+		if maxSize != 0 {
+			aux.MaxSize = maxSize
+		}
+
+		if desiredCapacity != 0 {
+			aux.DesiredCapacity = desiredCapacity
+		}
+	}
+
+	return autoScalingGroups, nil
+}
+
+func (a *AWSCloudProvider) GetAutoScalingGroupByID(autoScalingGroupID string) (autoScalingGroup *entity.EntityAutoScalingGroup, err error) {
+	autoScalingGroups, _ := a.GetAutoScalingGroups()
+
+	for _, autoScalingGroup := range autoScalingGroups {
+		if autoScalingGroup.AutoScalingGroupID == autoScalingGroupID {
+			return autoScalingGroup, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (a *AWSCloudProvider) StartAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error) {
+	svc := autoscaling.New(a.awsSession)
+
+	// modify the min, max and desired capacity
+	input := &autoscaling.UpdateAutoScalingGroupInput{
+		AutoScalingGroupName: aws.String(autoScalingGroup.AutoScalingGroupName),
+		MinSize:              aws.Int64(int64(autoScalingGroup.MinSize)),
+		MaxSize:              aws.Int64(int64(autoScalingGroup.MaxSize)),
+		DesiredCapacity:      aws.Int64(int64(autoScalingGroup.DesiredCapacity)),
+	}
+
+	_, err = svc.UpdateAutoScalingGroup(input)
+
+	if err != nil {
+		log.Println("Error updating AutoScalingGroup: ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (a *AWSCloudProvider) StopAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error) {
+	svc := autoscaling.New(a.awsSession)
+
+	// modify the min, max and desired capacity
+	input := &autoscaling.UpdateAutoScalingGroupInput{
+		AutoScalingGroupName: aws.String(autoScalingGroup.AutoScalingGroupName),
+		MinSize:              aws.Int64(0),
+		MaxSize:              aws.Int64(0),
+		DesiredCapacity:      aws.Int64(0),
+	}
+
+	_, err = svc.UpdateAutoScalingGroup(input)
+
+	if err != nil {
+		log.Println("Error updating AutoScalingGroup: ", err.Error())
 		return err
 	}
 

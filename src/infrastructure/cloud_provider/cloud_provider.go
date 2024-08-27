@@ -17,4 +17,10 @@ type ICloudProvider interface {
 	GetDBInstanceByID(string) (dbInstance *entity.EntityDbinstance, err error)
 	StartDBInstance(dbInstanceID string) (err error)
 	StopDBInstance(dbInstanceID string) (err error)
+
+	//AutoScallingGroups
+	GetAutoScalingGroups() (autoScalingGroups []*entity.EntityAutoScalingGroup, err error)
+	GetAutoScalingGroupByID(string) (autoScalingGroup *entity.EntityAutoScalingGroup, err error)
+	StartAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error)
+	StopAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error)
 }
