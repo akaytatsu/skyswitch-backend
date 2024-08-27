@@ -5,6 +5,7 @@ import (
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	usecase_autoscalling_groups "app/usecase/autoscalling_groups"
 	usecase_calendar "app/usecase/calendar"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_dbinstance "app/usecase/dbinstance"
@@ -49,6 +50,10 @@ func StartJobsCalendars() {
 		repository.NewDbinstancePostgres(conn),
 	)
 
+	var usecaseAutoScallingGroup usecase_autoscalling_groups.IUsecaseAutoScalingGroup = usecase_autoscalling_groups.NewService(
+		repository.NewAutoScalingGroupPostgres(conn),
+	)
+
 	var usecaseInstance usecase_instance.IUseCaseInstance = usecase_instance.NewService(
 		repository.NewInstancePostgres(conn),
 	)
@@ -58,6 +63,7 @@ func StartJobsCalendars() {
 		usecaseInstance,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecaseDbinstance,
+		usecaseAutoScallingGroup,
 	)
 
 	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(
@@ -73,6 +79,7 @@ func StartJobsCalendars() {
 		usecaseHoliday,
 		usecaseLog,
 		usecaseDbinstance,
+		usecaseAutoScallingGroup,
 	)
 
 	usecaseCalendar.CreateAllCalendarsJob()
@@ -86,12 +93,14 @@ func updateInstances() {
 	var repoInstances usecase_instance.IRepositoryInstance = repository.NewInstancePostgres(db)
 
 	var ucIntances usecase_instance.IUseCaseInstance = usecase_instance.NewService(repoInstances)
+	var ucAutoScallingGroup usecase_autoscalling_groups.IUsecaseAutoScalingGroup = usecase_autoscalling_groups.NewService(repository.NewAutoScalingGroupPostgres(db))
 	var ucDbinstance usecase_dbinstance.IUsecaseDbinstance = usecase_dbinstance.NewService(repository.NewDbinstancePostgres(db))
 	var ucCloudProvider usecase_cloud_account.IUsecaseCloudAccount = usecase_cloud_account.NewAWSService(
 		repoCloudProvider,
 		ucIntances,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		ucDbinstance,
+		ucAutoScallingGroup,
 	)
 
 	cloudAccounts, _, _ := ucCloudProvider.GetAll(entity.SearchEntityCloudAccountParams{
@@ -103,6 +112,7 @@ func updateInstances() {
 		if cloudAccount.Active {
 			ucCloudProvider.UpdateAllInstancesOnCloudAccountProvider(&cloudAccount)
 			ucCloudProvider.UpdateAllDBInstancesOnCloudAccountProvider(&cloudAccount)
+			ucCloudProvider.UpdateAllAutoScalingGroupsOnCloudAccountProvider(&cloudAccount)
 
 		}
 	}

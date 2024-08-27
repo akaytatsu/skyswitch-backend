@@ -9,6 +9,7 @@ import (
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	usecase_autoscalling_groups "app/usecase/autoscalling_groups"
 	usecase_calendar "app/usecase/calendar"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_dbinstance "app/usecase/dbinstance"
@@ -48,6 +49,10 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		repository.NewDbinstancePostgres(conn),
 	)
 
+	var usecaseAutoScallingGroup usecase_autoscalling_groups.IUsecaseAutoScalingGroup = usecase_autoscalling_groups.NewService(
+		repository.NewAutoScalingGroupPostgres(conn),
+	)
+
 	var usecaseLog usecase_log.IUsecaseLog = usecase_log.NewService(
 		repository.NewLogPostgres(conn),
 	)
@@ -61,6 +66,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		usecaseInstance,
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecaseDbinstance,
+		usecaseAutoScallingGroup,
 	)
 
 	var usecaseHoliday usecase_holiday.IUsecaseHoliday = usecase_holiday.NewService(
@@ -76,6 +82,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 		usecaseHoliday,
 		usecaseLog,
 		usecaseDbinstance,
+		usecaseAutoScallingGroup,
 	)
 
 	var usecaseJob usecase_job.IUsecaseJob = usecase_job.NewService(

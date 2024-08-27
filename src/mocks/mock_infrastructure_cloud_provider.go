@@ -50,6 +50,36 @@ func (mr *MockICloudProviderMockRecorder) Connect(arg0 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Connect", reflect.TypeOf((*MockICloudProvider)(nil).Connect), arg0)
 }
 
+// GetAutoScalingGroupByID mocks base method.
+func (m *MockICloudProvider) GetAutoScalingGroupByID(arg0 string) (*entity.EntityAutoScalingGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAutoScalingGroupByID", arg0)
+	ret0, _ := ret[0].(*entity.EntityAutoScalingGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAutoScalingGroupByID indicates an expected call of GetAutoScalingGroupByID.
+func (mr *MockICloudProviderMockRecorder) GetAutoScalingGroupByID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAutoScalingGroupByID", reflect.TypeOf((*MockICloudProvider)(nil).GetAutoScalingGroupByID), arg0)
+}
+
+// GetAutoScalingGroups mocks base method.
+func (m *MockICloudProvider) GetAutoScalingGroups() ([]*entity.EntityAutoScalingGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAutoScalingGroups")
+	ret0, _ := ret[0].([]*entity.EntityAutoScalingGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAutoScalingGroups indicates an expected call of GetAutoScalingGroups.
+func (mr *MockICloudProviderMockRecorder) GetAutoScalingGroups() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAutoScalingGroups", reflect.TypeOf((*MockICloudProvider)(nil).GetAutoScalingGroups))
+}
+
 // GetDBInstanceByID mocks base method.
 func (m *MockICloudProvider) GetDBInstanceByID(arg0 string) (*entity.EntityDbinstance, error) {
 	m.ctrl.T.Helper()
@@ -110,6 +140,20 @@ func (mr *MockICloudProviderMockRecorder) GetInstances() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstances", reflect.TypeOf((*MockICloudProvider)(nil).GetInstances))
 }
 
+// StartAutoScalingGroup mocks base method.
+func (m *MockICloudProvider) StartAutoScalingGroup(arg0 *entity.EntityAutoScalingGroup) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StartAutoScalingGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StartAutoScalingGroup indicates an expected call of StartAutoScalingGroup.
+func (mr *MockICloudProviderMockRecorder) StartAutoScalingGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartAutoScalingGroup", reflect.TypeOf((*MockICloudProvider)(nil).StartAutoScalingGroup), arg0)
+}
+
 // StartDBInstance mocks base method.
 func (m *MockICloudProvider) StartDBInstance(arg0 string) error {
 	m.ctrl.T.Helper()
@@ -136,6 +180,20 @@ func (m *MockICloudProvider) StartInstance(arg0 string) error {
 func (mr *MockICloudProviderMockRecorder) StartInstance(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartInstance", reflect.TypeOf((*MockICloudProvider)(nil).StartInstance), arg0)
+}
+
+// StopAutoScalingGroup mocks base method.
+func (m *MockICloudProvider) StopAutoScalingGroup(arg0 *entity.EntityAutoScalingGroup) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StopAutoScalingGroup", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// StopAutoScalingGroup indicates an expected call of StopAutoScalingGroup.
+func (mr *MockICloudProviderMockRecorder) StopAutoScalingGroup(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StopAutoScalingGroup", reflect.TypeOf((*MockICloudProvider)(nil).StopAutoScalingGroup), arg0)
 }
 
 // StopDBInstance mocks base method.

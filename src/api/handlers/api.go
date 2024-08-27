@@ -4,6 +4,7 @@ import (
 	infrastructure_cloud_provider_aws "app/infrastructure/cloud_provider/aws"
 	"app/infrastructure/postgres"
 	"app/infrastructure/repository"
+	usecase_autoscalling_groups "app/usecase/autoscalling_groups"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_instance "app/usecase/instance"
@@ -37,6 +38,7 @@ func HomeHandler(c *gin.Context) {
 		usecase_instance.NewService(repository.NewInstancePostgres(conn)),
 		infrastructure_cloud_provider_aws.NewAWSCloudProvider(),
 		usecase_dbinstance.NewService(repository.NewDbinstancePostgres(conn)),
+		usecase_autoscalling_groups.NewService(repository.NewAutoScalingGroupPostgres(conn)),
 	)
 
 	usecaseCloudAccount.UpdateAllInstancesOnAllCloudAccountProvider()

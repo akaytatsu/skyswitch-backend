@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -15,6 +17,9 @@ type EntityAutoScalingGroup struct {
 	MaxSize              int                `gorm:"column:max_size" json:"max_size"`
 	DesiredCapacity      int                `gorm:"column:desired_capacity" json:"desired_capacity"`
 	TotalInstances       int                `gorm:"column:total_instances" json:"total_instances"`
+	Active               bool               `json:"active" gorm:"default:true"`
+	CreatedAt            time.Time          `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt            time.Time          `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 func NewEntityAutoScalingGroup(entityAutoScalingGroupParam EntityAutoScalingGroup) (*EntityAutoScalingGroup, error) {

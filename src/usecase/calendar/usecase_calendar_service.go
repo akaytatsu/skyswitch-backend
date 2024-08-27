@@ -3,6 +3,7 @@ package usecase_calendar
 import (
 	"app/entity"
 	infrastructure_cloud_provider "app/infrastructure/cloud_provider"
+	usecase_autoscalling_groups "app/usecase/autoscalling_groups"
 	usecase_cloud_account "app/usecase/cloud_account"
 	usecase_dbinstance "app/usecase/dbinstance"
 	usecase_holiday "app/usecase/holiday"
@@ -18,15 +19,16 @@ import (
 )
 
 type UsecaseCalendar struct {
-	repo                 IRepositoryCalendar
-	scheduler            *gocron.Scheduler
-	usecaseInstance      usecase_instance.IUseCaseInstance
-	usecaseDbInstance    usecase_dbinstance.IUsecaseDbinstance
-	infraCloudProvider   infrastructure_cloud_provider.ICloudProvider
-	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount
-	usecaseHoliday       usecase_holiday.IUsecaseHoliday
-	usecaseLog           usecase_log.IUsecaseLog
-	Now                  func() time.Time
+	repo                     IRepositoryCalendar
+	scheduler                *gocron.Scheduler
+	usecaseInstance          usecase_instance.IUseCaseInstance
+	usecaseDbInstance        usecase_dbinstance.IUsecaseDbinstance
+	usecaseAutoScallingGroup usecase_autoscalling_groups.IUsecaseAutoScalingGroup
+	infraCloudProvider       infrastructure_cloud_provider.ICloudProvider
+	usecaseCloudAccoount     usecase_cloud_account.IUsecaseCloudAccount
+	usecaseHoliday           usecase_holiday.IUsecaseHoliday
+	usecaseLog               usecase_log.IUsecaseLog
+	Now                      func() time.Time
 }
 
 func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
@@ -34,17 +36,19 @@ func NewService(repository IRepositoryCalendar, scheduler *gocron.Scheduler,
 	infraCloudProvider infrastructure_cloud_provider.ICloudProvider,
 	usecaseCloudAccoount usecase_cloud_account.IUsecaseCloudAccount,
 	usecaseHoliday usecase_holiday.IUsecaseHoliday,
-	usecaseLog usecase_log.IUsecaseLog, usecaseDbInstance usecase_dbinstance.IUsecaseDbinstance) *UsecaseCalendar {
+	usecaseLog usecase_log.IUsecaseLog, usecaseDbInstance usecase_dbinstance.IUsecaseDbinstance,
+	usecaseAutoScallingGroup usecase_autoscalling_groups.IUsecaseAutoScalingGroup) *UsecaseCalendar {
 	return &UsecaseCalendar{
-		repo:                 repository,
-		scheduler:            scheduler,
-		usecaseInstance:      usecaseInstance,
-		infraCloudProvider:   infraCloudProvider,
-		usecaseCloudAccoount: usecaseCloudAccoount,
-		usecaseHoliday:       usecaseHoliday,
-		usecaseLog:           usecaseLog,
-		Now:                  time.Now,
-		usecaseDbInstance:    usecaseDbInstance,
+		repo:                     repository,
+		scheduler:                scheduler,
+		usecaseInstance:          usecaseInstance,
+		infraCloudProvider:       infraCloudProvider,
+		usecaseCloudAccoount:     usecaseCloudAccoount,
+		usecaseHoliday:           usecaseHoliday,
+		usecaseLog:               usecaseLog,
+		Now:                      time.Now,
+		usecaseDbInstance:        usecaseDbInstance,
+		usecaseAutoScallingGroup: usecaseAutoScallingGroup,
 	}
 }
 
@@ -226,9 +230,64 @@ func (u *UsecaseCalendar) ProcessDbInstance(dbInstance entity.EntityDbinstance, 
 	return errors.New("instance or calendar is not active")
 }
 
+func (u *UsecaseCalendar) ProccessAutoScallingGroup(autoScalling entity.EntityAutoScalingGroup, calendar entity.EntityCalendar) error {
+	cloudInfraProvider, err := u.infraCloudProvider.Connect(autoScalling.CloudAccount)
+	if err != nil {
+		log.Println("Error on connect to cloud provider: ", err)
+		return err
+	}
+
+	if autoScalling.Active && calendar.Active {
+		if check, _ := u.usecaseHoliday.IsHoliday(u.Now()); check && !calendar.ValidHoliday {
+			return errors.New("today is holiday")
+		}
+
+		logAutoScallingGroup := entity.EntityLog{
+			Code:     "job execute",
+			Instance: fmt.Sprintf("auto scalling group id: %s, auto scalling group name: %s", autoScalling.AutoScalingGroupID, autoScalling.AutoScalingGroupName),
+			Content: fmt.Sprintf(
+				"auto scalling group id: %s, calendar id: %d, calendar name: %s, auto scalling group name: %s, cloud account: %s",
+				autoScalling.AutoScalingGroupID,
+				calendar.ID,
+				calendar.Name,
+				autoScalling.AutoScalingGroupName,
+				autoScalling.CloudAccount.Nickname),
+			CreatedAt: u.Now(),
+		}
+
+		if calendar.TypeAction == "on" {
+			err = cloudInfraProvider.StartAutoScalingGroup(&autoScalling)
+			logAutoScallingGroup.Type = "start"
+			if err != nil {
+				logAutoScallingGroup.Error = err.Error()
+				u.usecaseLog.Create(&logAutoScallingGroup)
+				return err
+			}
+			u.usecaseLog.Create(&logAutoScallingGroup)
+
+			return nil
+		}
+
+		if calendar.TypeAction == "off" {
+			logAutoScallingGroup.Type = "stop"
+			err = cloudInfraProvider.StopAutoScalingGroup(&autoScalling)
+			if err != nil {
+				logAutoScallingGroup.Error = err.Error()
+				u.usecaseLog.Create(&logAutoScallingGroup)
+				return err
+			}
+			u.usecaseLog.Create(&logAutoScallingGroup)
+			return nil
+		}
+	}
+
+	return errors.New("AutoScallingGroups or calendar is not active")
+}
+
 func (u *UsecaseCalendar) ProccessCalendar(calendar entity.EntityCalendar) error {
 	go u.ProccessInstanceCalendar(calendar)
 	go u.ProccessDbInstanceCalendar(calendar)
+	go u.ProccessAutoScallingGroupCalendar(calendar)
 
 	return nil
 }
@@ -262,6 +321,23 @@ func (u *UsecaseCalendar) ProccessDbInstanceCalendar(calendar entity.EntityCalen
 		}
 
 		go u.ProcessDbInstance(dbInstance, calendar)
+	}
+
+	return nil
+}
+
+func (u *UsecaseCalendar) ProccessAutoScallingGroupCalendar(calendar entity.EntityCalendar) error {
+	autoScallingGroups, err := u.usecaseAutoScallingGroup.GetAllOFCalendar(calendar.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, autoScallingGroup := range autoScallingGroups {
+		if !autoScallingGroup.Active {
+			continue
+		}
+
+		go u.ProccessAutoScallingGroup(autoScallingGroup, calendar)
 	}
 
 	return nil
@@ -343,6 +419,37 @@ func (u *UsecaseCalendar) ScheduleUpdateInstance(cloudAccount entity.EntityCloud
 	}
 
 	println("update instance: ", instance.InstanceID, " - ", "counter: ", counter)
+}
+
+func (u *UsecaseCalendar) ScheduleUpdateAutoScallingGroup(cloudAccount entity.EntityCloudAccount,
+	autoScallingGroup entity.EntityAutoScalingGroup, finishStatus string) {
+
+	var counter int = 0
+
+	for {
+		autoScallingGroups, _ := u.usecaseCloudAccoount.UpdateAllAutoScalingGroupsOnAllCloudAccountProvider()
+
+		var cloudAutoScallingGroup *entity.EntityAutoScalingGroup
+
+		for _, i := range autoScallingGroups {
+			if i.AutoScalingGroupID == autoScallingGroup.AutoScalingGroupID {
+				cloudAutoScallingGroup = i
+				break
+			}
+		}
+
+		if cloudAutoScallingGroup == nil {
+			break
+		}
+		counter++
+
+		if counter > 15 {
+			break
+		}
+		time.Sleep(30 * time.Second)
+	}
+
+	println("update auto scalling group: ", autoScallingGroup.AutoScalingGroupID, " - ", "counter: ", counter)
 }
 
 func (u *UsecaseCalendar) configureSchedules(calendar entity.EntityCalendar) {

@@ -20,10 +20,16 @@ type IUsecaseCloudAccount interface {
 	UpdateCloudAccount(cloudAccount *entity.EntityCloudAccount) error
 	DeleteCloudAccount(cloudAccount *entity.EntityCloudAccount) error
 	ActiveDeactiveCloudAccount(id int64, status bool) (cloudAccount *entity.EntityCloudAccount, err error)
+	// EC2
 	UpdateAllInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (instances []*entity.EntityInstance, err error)
 	UpdateAllInstancesOnCloudAccountProviderFromID(id int) (instances []*entity.EntityInstance, err error)
 	UpdateAllInstancesOnAllCloudAccountProvider() (instances []*entity.EntityInstance, err error)
+	// RDS
 	UpdateAllDBInstancesOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (dbInstances []*entity.EntityDbinstance, err error)
 	UpdateAllDBInstancesOnCloudAccountProviderFromID(id int) (dbInstances []*entity.EntityDbinstance, err error)
 	UpdateAllDBInstancesOnAllCloudAccountProvider() (dbInstances []*entity.EntityDbinstance, err error)
+	// AutoScallingGroups
+	UpdateAllAutoScalingGroupsOnCloudAccountProvider(cloudAccount *entity.EntityCloudAccount) (autoScalingGroups []*entity.EntityAutoScalingGroup, err error)
+	UpdateAllAutoScalingGroupsOnCloudAccountProviderFromID(id int) (autoScalingGroups []*entity.EntityAutoScalingGroup, err error)
+	UpdateAllAutoScalingGroupsOnAllCloudAccountProvider() (autoScalingGroups []*entity.EntityAutoScalingGroup, err error)
 }
