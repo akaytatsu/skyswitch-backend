@@ -96,6 +96,7 @@ func setupRouter(conn *gorm.DB) *gin.Engine {
 	handlers.MountCalendarRoutes(r, conn, usecaseCalendar)
 	handlers.MountJobRoutes(r, conn, usecaseJob)
 	handlers.MountLogRoutes(r, conn, usecaseLog)
+	handlers.MountAutoScalingGroupRoutes(r, conn, usecaseAutoScallingGroup)
 
 	return r
 }

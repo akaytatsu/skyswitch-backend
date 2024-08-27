@@ -1,4 +1,35 @@
 definitions:
+  entity.EntityAutoScalingGroup:
+    properties:
+      active:
+        type: boolean
+      auto_scaling_group_id:
+        type: string
+      auto_scaling_group_name:
+        type: string
+      calendars:
+        items:
+          $ref: '#/definitions/entity.EntityCalendar'
+        type: array
+      cloud_account:
+        $ref: '#/definitions/entity.EntityCloudAccount'
+      cloud_account_id:
+        type: integer
+      created_at:
+        type: string
+      desired_capacity:
+        type: integer
+      id:
+        type: integer
+      max_size:
+        type: integer
+      min_size:
+        type: integer
+      total_instances:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   entity.EntityCalendar:
     properties:
       active:
@@ -55,6 +86,43 @@ definitions:
       updatedAt:
         type: string
     type: object
+  entity.EntityDbinstance:
+    properties:
+      active:
+        type: boolean
+      calendars:
+        items:
+          $ref: '#/definitions/entity.EntityCalendar'
+        type: array
+      cloud_account:
+        $ref: '#/definitions/entity.EntityCloudAccount'
+      cloud_account_id:
+        type: integer
+      created_at:
+        type: string
+      db_instance_class:
+        type: string
+      db_instance_id:
+        type: string
+      db_instance_name:
+        type: string
+      db_instance_region:
+        type: string
+      db_instance_state:
+        type: string
+      db_instance_type:
+        type: string
+      endpoint:
+        type: string
+      engine:
+        type: string
+      id:
+        type: integer
+      port:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   entity.EntityHoliday:
     properties:
       created_at:
@@ -97,6 +165,8 @@ definitions:
     type: object
   entity.EntityJob:
     properties:
+      calendar:
+        $ref: '#/definitions/entity.EntityCalendar'
       count:
         type: integer
       error:
@@ -166,6 +236,106 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/autoscallinggroup:
+    get:
+      consumes:
+      - application/json
+      description: Get All AutoScalingGroup
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityAutoScalingGroup'
+            type: array
+      summary: Get All AutoScalingGroup
+      tags:
+      - AutoScalingGroup
+    post:
+      consumes:
+      - application/json
+      description: Create AutoScalingGroup
+      parameters:
+      - description: AutoScalingGroup
+        in: body
+        name: autoscallinggroup
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      summary: Create AutoScalingGroup
+      tags:
+      - AutoScalingGroup
+    put:
+      consumes:
+      - application/json
+      description: Update AutoScalingGroup
+      parameters:
+      - description: AutoScalingGroup
+        in: body
+        name: autoscallinggroup
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      summary: Update AutoScalingGroup
+      tags:
+      - AutoScalingGroup
+  /api/autoscallinggroup/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete AutoScalingGroup
+      parameters:
+      - description: AutoScalingGroup ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      summary: Delete AutoScalingGroup
+      tags:
+      - AutoScalingGroup
+    get:
+      consumes:
+      - application/json
+      description: Get AutoScalingGroup
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityAutoScalingGroup'
+      summary: Get AutoScalingGroup
+      tags:
+      - AutoScalingGroup
   /api/calendar:
     get:
       consumes:
@@ -423,6 +593,106 @@ paths:
       summary: Update all instances of cloud account provider
       tags:
       - CloudAccount
+  /api/dbinstance:
+    get:
+      consumes:
+      - application/json
+      description: Get All Dbinstance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            items:
+              $ref: '#/definitions/entity.EntityDbinstance'
+            type: array
+      summary: Get All Dbinstance
+      tags:
+      - Dbinstance
+    post:
+      consumes:
+      - application/json
+      description: Create Dbinstance
+      parameters:
+      - description: Dbinstance
+        in: body
+        name: dbinstance
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityDbinstance'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityDbinstance'
+      summary: Create Dbinstance
+      tags:
+      - Dbinstance
+    put:
+      consumes:
+      - application/json
+      description: Update Dbinstance
+      parameters:
+      - description: Dbinstance
+        in: body
+        name: dbinstance
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityDbinstance'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityDbinstance'
+      summary: Update Dbinstance
+      tags:
+      - Dbinstance
+  /api/dbinstance/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Dbinstance
+      parameters:
+      - description: Dbinstance ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityDbinstance'
+      summary: Delete Dbinstance
+      tags:
+      - Dbinstance
+    get:
+      consumes:
+      - application/json
+      description: Get Dbinstance
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/entity.EntityDbinstance'
+      summary: Get Dbinstance
+      tags:
+      - Dbinstance
   /api/holiday:
     get:
       consumes:

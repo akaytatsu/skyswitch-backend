@@ -4,6 +4,158 @@
         "contact": {}
     },
     "paths": {
+        "/api/autoscallinggroup": {
+            "get": {
+                "description": "Get All AutoScalingGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AutoScalingGroup"
+                ],
+                "summary": "Get All AutoScalingGroup",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update AutoScalingGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AutoScalingGroup"
+                ],
+                "summary": "Update AutoScalingGroup",
+                "parameters": [
+                    {
+                        "description": "AutoScalingGroup",
+                        "name": "autoscallinggroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create AutoScalingGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AutoScalingGroup"
+                ],
+                "summary": "Create AutoScalingGroup",
+                "parameters": [
+                    {
+                        "description": "AutoScalingGroup",
+                        "name": "autoscallinggroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/autoscallinggroup/{id}": {
+            "get": {
+                "description": "Get AutoScalingGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AutoScalingGroup"
+                ],
+                "summary": "Get AutoScalingGroup",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete AutoScalingGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "AutoScalingGroup"
+                ],
+                "summary": "Delete AutoScalingGroup",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "AutoScalingGroup ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityAutoScalingGroup"
+                        }
+                    }
+                }
+            }
+        },
         "/api/calendar": {
             "get": {
                 "description": "Get All Calendar",
@@ -402,6 +554,158 @@
                         "description": "success",
                         "schema": {
                             "$ref": "#/definitions/entity.EntityCloudAccount"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dbinstance": {
+            "get": {
+                "description": "Get All Dbinstance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dbinstance"
+                ],
+                "summary": "Get All Dbinstance",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.EntityDbinstance"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Dbinstance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dbinstance"
+                ],
+                "summary": "Update Dbinstance",
+                "parameters": [
+                    {
+                        "description": "Dbinstance",
+                        "name": "dbinstance",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Dbinstance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dbinstance"
+                ],
+                "summary": "Create Dbinstance",
+                "parameters": [
+                    {
+                        "description": "Dbinstance",
+                        "name": "dbinstance",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dbinstance/{id}": {
+            "get": {
+                "description": "Get Dbinstance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dbinstance"
+                ],
+                "summary": "Get Dbinstance",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Dbinstance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dbinstance"
+                ],
+                "summary": "Delete Dbinstance",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dbinstance ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/entity.EntityDbinstance"
                         }
                     }
                 }
@@ -1082,6 +1386,53 @@
         }
     },
     "definitions": {
+        "entity.EntityAutoScalingGroup": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "auto_scaling_group_id": {
+                    "type": "string"
+                },
+                "auto_scaling_group_name": {
+                    "type": "string"
+                },
+                "calendars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.EntityCalendar"
+                    }
+                },
+                "cloud_account": {
+                    "$ref": "#/definitions/entity.EntityCloudAccount"
+                },
+                "cloud_account_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "desired_capacity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "max_size": {
+                    "type": "integer"
+                },
+                "min_size": {
+                    "type": "integer"
+                },
+                "total_instances": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.EntityCalendar": {
             "type": "object",
             "properties": {
@@ -1167,6 +1518,62 @@
                 }
             }
         },
+        "entity.EntityDbinstance": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "calendars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.EntityCalendar"
+                    }
+                },
+                "cloud_account": {
+                    "$ref": "#/definitions/entity.EntityCloudAccount"
+                },
+                "cloud_account_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "db_instance_class": {
+                    "type": "string"
+                },
+                "db_instance_id": {
+                    "type": "string"
+                },
+                "db_instance_name": {
+                    "type": "string"
+                },
+                "db_instance_region": {
+                    "type": "string"
+                },
+                "db_instance_state": {
+                    "type": "string"
+                },
+                "db_instance_type": {
+                    "type": "string"
+                },
+                "endpoint": {
+                    "type": "string"
+                },
+                "engine": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.EntityHoliday": {
             "type": "object",
             "properties": {
@@ -1231,6 +1638,9 @@
         "entity.EntityJob": {
             "type": "object",
             "properties": {
+                "calendar": {
+                    "$ref": "#/definitions/entity.EntityCalendar"
+                },
                 "count": {
                     "type": "integer"
                 },
