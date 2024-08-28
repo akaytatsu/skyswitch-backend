@@ -139,15 +139,15 @@ func (mr *MockIRepositoryAutoScalingGroupMockRecorder) GetFromID(arg0 interface{
 }
 
 // Update mocks base method.
-func (m *MockIRepositoryAutoScalingGroup) Update(arg0 *entity.EntityAutoScalingGroup) error {
+func (m *MockIRepositoryAutoScalingGroup) Update(arg0 *entity.EntityAutoScalingGroup, arg1 bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", arg0)
+	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockIRepositoryAutoScalingGroupMockRecorder) Update(arg0 interface{}) *gomock.Call {
+func (mr *MockIRepositoryAutoScalingGroupMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIRepositoryAutoScalingGroup)(nil).Update), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIRepositoryAutoScalingGroup)(nil).Update), arg0, arg1)
 }

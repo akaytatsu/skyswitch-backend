@@ -139,15 +139,15 @@ func (mr *MockIRepositoryDbinstanceMockRecorder) GetFromID(arg0 interface{}) *go
 }
 
 // Update mocks base method.
-func (m *MockIRepositoryDbinstance) Update(arg0 *entity.EntityDbinstance) error {
+func (m *MockIRepositoryDbinstance) Update(arg0 *entity.EntityDbinstance, arg1 bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", arg0)
+	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockIRepositoryDbinstanceMockRecorder) Update(arg0 interface{}) *gomock.Call {
+func (mr *MockIRepositoryDbinstanceMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIRepositoryDbinstance)(nil).Update), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIRepositoryDbinstance)(nil).Update), arg0, arg1)
 }

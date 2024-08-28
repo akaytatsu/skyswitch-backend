@@ -153,15 +153,15 @@ func (mr *MockIUsecaseDbinstanceMockRecorder) GetByInstanceID(arg0 interface{}) 
 }
 
 // Update mocks base method.
-func (m *MockIUsecaseDbinstance) Update(arg0 *entity.EntityDbinstance) error {
+func (m *MockIUsecaseDbinstance) Update(arg0 *entity.EntityDbinstance, arg1 bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", arg0)
+	ret := m.ctrl.Call(m, "Update", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockIUsecaseDbinstanceMockRecorder) Update(arg0 interface{}) *gomock.Call {
+func (mr *MockIUsecaseDbinstanceMockRecorder) Update(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIUsecaseDbinstance)(nil).Update), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIUsecaseDbinstance)(nil).Update), arg0, arg1)
 }
