@@ -69,7 +69,7 @@ func (r *RepositoryAutoScalingGroup) GetAll(searchParams entity.SearchEntityAuto
 }
 
 func (r *RepositoryAutoScalingGroup) Create(autoScalingGroup *entity.EntityAutoScalingGroup) error {
-	return r.DB.Create(autoScalingGroup).Error
+	return r.DB.Create(&autoScalingGroup).Error
 }
 
 func (r *RepositoryAutoScalingGroup) Update(autoScalingGroup *entity.EntityAutoScalingGroup, updateCalendars bool) error {
@@ -80,10 +80,12 @@ func (r *RepositoryAutoScalingGroup) Update(autoScalingGroup *entity.EntityAutoS
 	}
 
 	if updateCalendars {
-		r.DB.Model(autoScalingGroup).Association("Calendars").Replace(autoScalingGroup.Calendars)
+		calendarsAux := autoScalingGroup.Calendars
+		r.DB.Model(autoScalingGroup).Association("Calendars").Clear()
+		autoScalingGroup.Calendars = calendarsAux
 	}
 
-	return r.DB.Save(autoScalingGroup).Error
+	return r.DB.Save(&autoScalingGroup).Error
 }
 
 func (r *RepositoryAutoScalingGroup) Delete(id int) error {

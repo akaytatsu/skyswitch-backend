@@ -87,7 +87,9 @@ func (r *RepositoryDbinstance) Update(dbinstance *entity.EntityDbinstance, updat
 	}
 
 	if updateCalendars {
-		r.DB.Model(&dbinstance).Association("Calendars").Replace(dbinstance.Calendars)
+		calendarsAux := dbinstance.Calendars
+		r.DB.Model(dbinstance).Association("Calendars").Clear()
+		dbinstance.Calendars = calendarsAux
 	}
 
 	err = r.DB.Save(&dbinstance).Error
