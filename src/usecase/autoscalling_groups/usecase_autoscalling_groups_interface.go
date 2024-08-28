@@ -7,7 +7,7 @@ type IRepositoryAutoScalingGroup interface {
 	GetFromID(id int) (*entity.EntityAutoScalingGroup, error)
 	GetAll(searchParams entity.SearchEntityAutoScalingGroupParams) (response []entity.EntityAutoScalingGroup, totalRegisters int64, err error)
 	Create(*entity.EntityAutoScalingGroup) error
-	Update(*entity.EntityAutoScalingGroup) error
+	Update(*entity.EntityAutoScalingGroup, bool) error
 	Delete(id int) error
 	FromCalendar(calendarID int) (response []entity.EntityAutoScalingGroup, err error)
 	GetByID(autoScallingGroupID string) (autoScallingGroup *entity.EntityAutoScalingGroup, err error)
@@ -19,7 +19,7 @@ type IUsecaseAutoScalingGroup interface {
 	Get(id int) (*entity.EntityAutoScalingGroup, error)
 	GetAll(searchParams entity.SearchEntityAutoScalingGroupParams) (response []entity.EntityAutoScalingGroup, totalRegisters int64, err error)
 	Create(*entity.EntityAutoScalingGroup) error
-	Update(*entity.EntityAutoScalingGroup) error
+	Update(*entity.EntityAutoScalingGroup, bool) error
 	CreateOrUpdate(autoScallingGroup *entity.EntityAutoScalingGroup, updateCalendars bool) error
 	Delete(id int) error
 	GetAllOFCalendar(calendarID int) (response []entity.EntityAutoScalingGroup, err error)

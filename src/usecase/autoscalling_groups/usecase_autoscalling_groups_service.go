@@ -22,8 +22,8 @@ func (u *UsecaseAutoScalingGroup) Create(autoScallingGroup *entity.EntityAutoSca
 	return u.repo.Create(autoScallingGroup)
 }
 
-func (u *UsecaseAutoScalingGroup) Update(autoScallingGroup *entity.EntityAutoScalingGroup) error {
-	return u.repo.Update(autoScallingGroup)
+func (u *UsecaseAutoScalingGroup) Update(autoScallingGroup *entity.EntityAutoScalingGroup, updateCalendars bool) error {
+	return u.repo.Update(autoScallingGroup, updateCalendars)
 }
 
 func (u *UsecaseAutoScalingGroup) CreateOrUpdate(autoScallingGroup *entity.EntityAutoScalingGroup, updateCalendars bool) error {
@@ -36,7 +36,7 @@ func (u *UsecaseAutoScalingGroup) CreateOrUpdate(autoScallingGroup *entity.Entit
 
 		autoScallingGroup.ID = autoScallingGroupLocal.ID
 
-		return u.repo.Update(autoScallingGroup)
+		return u.repo.Update(autoScallingGroup, updateCalendars)
 	}
 
 	return u.repo.Create(autoScallingGroup)

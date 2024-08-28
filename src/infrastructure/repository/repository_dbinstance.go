@@ -79,11 +79,15 @@ func (r *RepositoryDbinstance) Create(dbinstance *entity.EntityDbinstance) (err 
 	return err
 }
 
-func (r *RepositoryDbinstance) Update(dbinstance *entity.EntityDbinstance) (err error) {
+func (r *RepositoryDbinstance) Update(dbinstance *entity.EntityDbinstance, updateCalendars bool) (err error) {
 	_, err = r.GetFromID(int(dbinstance.ID))
 
 	if err != nil {
 		return err
+	}
+
+	if updateCalendars {
+		r.DB.Model(&dbinstance).Association("Calendars").Replace(dbinstance.Calendars)
 	}
 
 	err = r.DB.Save(&dbinstance).Error

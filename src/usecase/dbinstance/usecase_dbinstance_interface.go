@@ -7,7 +7,7 @@ type IRepositoryDbinstance interface {
 	GetFromID(id int) (*entity.EntityDbinstance, error)
 	GetAll(searchParams entity.SearchEntityDbinstanceParams) (response []entity.EntityDbinstance, totalRegisters int64, err error)
 	Create(*entity.EntityDbinstance) error
-	Update(*entity.EntityDbinstance) error
+	Update(*entity.EntityDbinstance, bool) error
 	Delete(id int) error
 	FromCalendar(calendarID int) (response []entity.EntityDbinstance, err error)
 	GetByInstanceID(instanceID string) (instance *entity.EntityDbinstance, err error)
@@ -19,7 +19,7 @@ type IUsecaseDbinstance interface {
 	Get(id int) (*entity.EntityDbinstance, error)
 	GetAll(searchParams entity.SearchEntityDbinstanceParams) (response []entity.EntityDbinstance, totalRegisters int64, err error)
 	Create(*entity.EntityDbinstance) error
-	Update(*entity.EntityDbinstance) error
+	Update(*entity.EntityDbinstance, bool) error
 	CreateOrUpdateDbInstance(instance *entity.EntityDbinstance, updateCalendars bool) error
 	Delete(id int) error
 	GetAllOFCalendar(calendarID int) (response []entity.EntityDbinstance, err error)

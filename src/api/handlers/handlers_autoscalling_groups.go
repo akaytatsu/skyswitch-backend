@@ -134,7 +134,7 @@ func (h *AutoScalingGroupHandler) UpdateAutoScalingGroup(c *gin.Context) {
 		return
 	}
 
-	err := h.UsecaseAutoScalingGroup.Update(&autoscallinggroup)
+	err := h.UsecaseAutoScalingGroup.Update(&autoscallinggroup, true)
 
 	if exception := handleError(c, err); exception {
 		return

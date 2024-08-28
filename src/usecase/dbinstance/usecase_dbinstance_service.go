@@ -22,8 +22,8 @@ func (u *UsecaseDbinstance) Create(dbinstance *entity.EntityDbinstance) error {
 	return u.repo.Create(dbinstance)
 }
 
-func (u *UsecaseDbinstance) Update(dbinstance *entity.EntityDbinstance) error {
-	return u.repo.Update(dbinstance)
+func (u *UsecaseDbinstance) Update(dbinstance *entity.EntityDbinstance, updateCalendars bool) error {
+	return u.repo.Update(dbinstance, updateCalendars)
 }
 
 func (u *UsecaseDbinstance) Delete(id int) error {
@@ -40,7 +40,7 @@ func (u *UsecaseDbinstance) CreateOrUpdateDbInstance(instance *entity.EntityDbin
 
 		instance.ID = instanceLocal.ID
 
-		return u.repo.Update(instance)
+		return u.repo.Update(instance, updateCalendars)
 	}
 
 	return u.repo.Create(instance)

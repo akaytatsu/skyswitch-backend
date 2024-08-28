@@ -72,11 +72,15 @@ func (r *RepositoryAutoScalingGroup) Create(autoScalingGroup *entity.EntityAutoS
 	return r.DB.Create(autoScalingGroup).Error
 }
 
-func (r *RepositoryAutoScalingGroup) Update(autoScalingGroup *entity.EntityAutoScalingGroup) error {
+func (r *RepositoryAutoScalingGroup) Update(autoScalingGroup *entity.EntityAutoScalingGroup, updateCalendars bool) error {
 	_, err := r.GetFromID(autoScalingGroup.ID)
 
 	if err != nil {
 		return err
+	}
+
+	if updateCalendars {
+		r.DB.Model(autoScalingGroup).Association("Calendars").Replace(autoScalingGroup.Calendars)
 	}
 
 	return r.DB.Save(autoScalingGroup).Error

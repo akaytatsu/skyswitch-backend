@@ -134,7 +134,7 @@ func (h *DbinstanceHandler) UpdateDbinstance(c *gin.Context) {
 		return
 	}
 
-	err := h.UsecaseDbinstance.Update(&dbinstance)
+	err := h.UsecaseDbinstance.Update(&dbinstance, true)
 
 	if exception := handleError(c, err); exception {
 		return

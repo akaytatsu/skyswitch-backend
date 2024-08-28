@@ -203,8 +203,6 @@ func (u *UseCaseAWSCloudAccount) UpdateAllAutoScalingGroupsOnCloudAccountProvide
 		return autoScalingGroups, err
 	}
 
-	log.Println("AutoScalingGroups: ", autoScalingGroups, " account: ", cloudAccount)
-
 	for _, autoScalingGroup := range autoScalingGroups {
 
 		err = u.usecaseAutoScallingGroup.CreateOrUpdate(autoScalingGroup, false)
