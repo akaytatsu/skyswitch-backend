@@ -231,27 +231,14 @@ func (a *AWSCloudProvider) GetAutoScalingGroups() (autoScalingGroups []*entity.E
 
 	for _, asg := range result.AutoScalingGroups {
 
-		minSize := int(*asg.MinSize)
-		maxSize := int(*asg.MaxSize)
-		desiredCapacity := int(*asg.DesiredCapacity)
-
 		aux := &entity.EntityAutoScalingGroup{
 			CloudAccountID:       a.cloudAccount.ID,
 			AutoScalingGroupID:   *asg.AutoScalingGroupName,
 			AutoScalingGroupName: *asg.AutoScalingGroupName,
 			TotalInstances:       len(asg.Instances),
-		}
-
-		if minSize != 0 {
-			aux.MinSize = minSize
-		}
-
-		if maxSize != 0 {
-			aux.MaxSize = maxSize
-		}
-
-		if desiredCapacity != 0 {
-			aux.DesiredCapacity = desiredCapacity
+			MinSize:              int(*asg.MinSize),
+			MaxSize:              int(*asg.MaxSize),
+			DesiredCapacity:      int(*asg.DesiredCapacity),
 		}
 
 		autoScalingGroups = append(autoScalingGroups, aux)

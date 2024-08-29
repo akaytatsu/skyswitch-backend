@@ -36,6 +36,18 @@ func (u *UsecaseAutoScalingGroup) CreateOrUpdate(autoScallingGroup *entity.Entit
 
 		autoScallingGroup.ID = autoScallingGroupLocal.ID
 
+		if autoScallingGroup.MinSize == 0 {
+			autoScallingGroup.MinSize = autoScallingGroupLocal.MinSize
+		}
+
+		if autoScallingGroup.MaxSize == 0 {
+			autoScallingGroup.MaxSize = autoScallingGroupLocal.MaxSize
+		}
+
+		if autoScallingGroup.DesiredCapacity == 0 {
+			autoScallingGroup.DesiredCapacity = autoScallingGroupLocal.DesiredCapacity
+		}
+
 		return u.repo.Update(autoScallingGroup, updateCalendars)
 	}
 
