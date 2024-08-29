@@ -273,7 +273,9 @@ func (a *AWSCloudProvider) GetAutoScalingGroupByID(autoScalingGroupID string) (a
 }
 
 func (a *AWSCloudProvider) StartAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error) {
-	svc := autoscaling.New(a.awsSession)
+	svc := autoscaling.New(a.awsSession, &aws.Config{
+		Region: aws.String(autoScalingGroup.CloudAccount.Region), // Substitua pela sua região
+	})
 
 	// modify the min, max and desired capacity
 	input := &autoscaling.UpdateAutoScalingGroupInput{
@@ -294,7 +296,9 @@ func (a *AWSCloudProvider) StartAutoScalingGroup(autoScalingGroup *entity.Entity
 }
 
 func (a *AWSCloudProvider) StopAutoScalingGroup(autoScalingGroup *entity.EntityAutoScalingGroup) (err error) {
-	svc := autoscaling.New(a.awsSession)
+	svc := autoscaling.New(a.awsSession, &aws.Config{
+		Region: aws.String(autoScalingGroup.CloudAccount.Region), // Substitua pela sua região
+	})
 
 	// modify the min, max and desired capacity
 	input := &autoscaling.UpdateAutoScalingGroupInput{

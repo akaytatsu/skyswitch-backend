@@ -18,7 +18,7 @@ func NewAutoScalingGroupPostgres(DB *gorm.DB) *RepositoryAutoScalingGroup {
 }
 
 func (r *RepositoryAutoScalingGroup) GetFromID(id int) (autoScalingGroup *entity.EntityAutoScalingGroup, err error) {
-	r.DB.First(&autoScalingGroup, id)
+	r.DB.Model(entity.EntityAutoScalingGroup{}).Preload("CloudAccount").First(&autoScalingGroup, id)
 
 	return
 }
@@ -96,13 +96,14 @@ func (r *RepositoryAutoScalingGroup) FromCalendar(calendarID int) (response []en
 	err = r.DB.Model(&entity.EntityAutoScalingGroup{}).
 		Joins("JOIN entity_autoscalling_groups_calendars ON entity_autoscalling_groups_calendars.entity_auto_scaling_group_id = entity_auto_scaling_groups.id").
 		Where("entity_autoscalling_groups_calendars.entity_calendar_id = ?", calendarID).
+		Preload("CloudAccount").
 		Find(&response).Error
 
 	return response, err
 }
 
 func (r *RepositoryAutoScalingGroup) GetByID(autoScallingGroupID string) (autoScallingGroup *entity.EntityAutoScalingGroup, err error) {
-	err = r.DB.Where("auto_scaling_group_id = ?", autoScallingGroupID).First(&autoScallingGroup).Error
+	err = r.DB.Where("auto_scaling_group_id = ?", autoScallingGroupID).Preload("CloudAccount").First(&autoScallingGroup).Error
 
 	return
 }
